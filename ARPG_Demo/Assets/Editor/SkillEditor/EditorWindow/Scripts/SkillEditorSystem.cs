@@ -1,4 +1,6 @@
-﻿using AkieEmpty.CharacterSystem;
+﻿using System.Collections.Generic;
+using AkieEmpty.CharacterSystem;
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -17,19 +19,28 @@ namespace AkieEmpty.SkillEditor
             this.tickStep = tickStep;
         }
     }
-    public class SkillEditorSystem :Object
+
+    public interface ISkillEditorSystem
+    {
+        public SkillConfig SkillConfig { get; }
+        public SkillEditorConfig SkillEditorConfig { get; }
+        public void SaveConfig();
+    }
+    public class SkillEditorSystem :Object, ISkillEditorSystem
     {
         
         private readonly ISkillEditorWindow editorWindow;
         private readonly SkillEditorConfig skillEditorConfig;
-        private SkillConfig SkillConfig => editorWindow.SkillConfig;
+        public SkillConfig SkillConfig => editorWindow.SkillConfig;
+        public SkillEditorConfig SkillEditorConfig => skillEditorConfig;
+
         public SkillEditorSystem(ISkillEditorWindow editorWindow, SkillEditorConfig skillEditorConfig) 
         {
             this.editorWindow = editorWindow;
             this.skillEditorConfig = skillEditorConfig;
         } 
 
-        #region 菜单
+        #region Menu
       
         private const string previewCharacterParentPath = "PreviewCharacterRoot";
         private GameObject currentPreviewCharacterObj;
@@ -61,7 +72,6 @@ namespace AkieEmpty.SkillEditor
             }
             else Debug.LogWarning("场景不存在！");
         }
-      
         public GameObject CreatePreviewCharacter(GameObject previewObj)
         {
             // 值相等，设置无效
@@ -86,33 +96,27 @@ namespace AkieEmpty.SkillEditor
         public void SetPreviewFromSceneObject(ChangeEvent<Object> evt)
         {
             currentPreviewCharacterObj = (GameObject)evt.newValue;
-        }
-        //public void SetSkillConfig(SkillConfig SkillConfig)
-        //{
-        //    this.SkillConfig = SkillConfig;
-        //    if (SkillConfig == null) UpdateCurrentMaxFrameCount(100);
-        //    else UpdateCurrentMaxFrameCount(SkillConfig.maxFrameCount);
-            
-        //}
+        }   
         #endregion
 
         #region TimeShaft
         private int currentSelectFrameIndex;
-        private int currentMaxFrameCount;
+        private int currentMaxFrameCount = -1;
 
-        private int CurrentSelectFrameIndex
+        public int CurrentSelectFrameIndex
         {
             get => currentSelectFrameIndex;
             set
             {
                 if (currentSelectFrameIndex == value) return;
                 // 如果超出范围，更新最大帧
-                if (value > CurrentMaxFrameCount) UpdateCurrentMaxFrameCount(value);
+                if (value > CurrentMaxFrameCount) CurrentMaxFrameCount =value ;
                 currentSelectFrameIndex = Mathf.Clamp(value, 0, CurrentMaxFrameCount);
                 editorWindow.UpdateTimerShaftView();
+                editorWindow.UpdateConsoleField();
             }
         }
-        private int CurrentMaxFrameCount
+        public int CurrentMaxFrameCount
         {
             get => currentMaxFrameCount;
             set
@@ -120,6 +124,8 @@ namespace AkieEmpty.SkillEditor
                 if (currentMaxFrameCount == value) return;
                 currentMaxFrameCount = value;
                 if (SkillConfig != null) SkillConfig.maxFrameCount = value;
+                editorWindow.UpdateConsoleField();
+                editorWindow.UpdateTrackContentSzie();
             }
         }
 
@@ -142,7 +148,7 @@ namespace AkieEmpty.SkillEditor
         }
         public void SelectFrameIndexFromMouseDown(float mouseX)
         {
-            int frameIndex = GetFrameIndexByMousePos(mouseX);
+            int frameIndex = GetFrameIndexByMousePos(mouseX,skillEditorConfig.CurrentFrameUnitWidth);
             if (frameIndex == CurrentSelectFrameIndex) return;
             CurrentSelectFrameIndex = frameIndex;
         }
@@ -156,16 +162,18 @@ namespace AkieEmpty.SkillEditor
             }
             return false;
         }
-        private int GetFrameIndexByMousePos(float x)
+        public static int GetFrameIndexByMousePos(float x,int frameUnitWidth)
         {
-            return Mathf.RoundToInt(x / skillEditorConfig.CurrentFrameUnitWidth);
+            return Mathf.RoundToInt(x / frameUnitWidth);
         }
+
+      
         #endregion
 
         #region Console
         public void PreviouFrame()
         {
-            UpdateCurrentSelectFrame(CurrentSelectFrameIndex + 1);
+            UpdateCurrentSelectFrame(CurrentSelectFrameIndex - 1);
         }
         public void Play()
         {
@@ -174,7 +182,7 @@ namespace AkieEmpty.SkillEditor
 
         public void NextFrame()
         {           
-            UpdateCurrentSelectFrame(CurrentSelectFrameIndex-1);
+            UpdateCurrentSelectFrame(CurrentSelectFrameIndex + 1);
         }
 
         public void UpdateCurrentSelectFrame(int currentFrame)
@@ -187,6 +195,16 @@ namespace AkieEmpty.SkillEditor
             CurrentMaxFrameCount = maxFrameCount;
         }
         #endregion
+
+        public void SaveConfig()
+        {
+            if (SkillConfig != null)
+            {
+                EditorUtility.SetDirty(SkillConfig);
+                AssetDatabase.SaveAssetIfDirty(SkillConfig);
+            }
+        }
+
 
     }
 }

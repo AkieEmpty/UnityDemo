@@ -28,9 +28,7 @@
         <ui:VisualElement name="Right" style="flex-grow: 1; width: auto; flex-shrink: 1; padding-left: 10px; padding-right: 5px;">
             <ui:IMGUIContainer name="TimerShaft" style="height: 30px; min-height: 30px; margin-bottom: 0; border-bottom-width: 0.5px; border-bottom-color: rgb(32, 32, 32); margin-right: 13px; margin-left: 0; margin-top: 0;" />
             <ui:ScrollView name="MainContentView" mode="VerticalAndHorizontal" horizontal-scroller-visibility="AlwaysVisible" vertical-scroller-visibility="AlwaysVisible">
-                <ui:VisualElement name="ContentListView" style="min-height: 1000px; width: auto; flex-shrink: 0;">
-                    <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" style="width: 1524px;" />
-                </ui:VisualElement>
+                <ui:VisualElement name="TrackContentList" style="min-height: 1000px; width: auto; flex-shrink: 0;" />
             </ui:ScrollView>
             <ui:IMGUIContainer name="SelectLine" style="position: absolute; left: 10px;" />
         </ui:VisualElement>
