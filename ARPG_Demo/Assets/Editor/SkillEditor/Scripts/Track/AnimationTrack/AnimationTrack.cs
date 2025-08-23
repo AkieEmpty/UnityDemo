@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AkieEmpty.CharacterSystem;
 using UnityEditor;
@@ -13,13 +14,14 @@ namespace AkieEmpty.SkillEditor
     {
         private const string TrackName = "动画配置";
         private readonly ISkillEditorSystem skillEditorSystem;
+        private readonly ISkillEditorWindow skillEditorWindow;
         private readonly Dictionary<int, AnimationTrackItem> trackItemDic = new Dictionary<int, AnimationTrackItem>();
         private SingeleLineTrackStyle skillTrackStyle;
-        private Dictionary<int, AnimationFrameData> FrameDataDic => skillEditorSystem.SkillConfig.skillAnimationData.FrameDataDic;
-        public AnimationTrack(ISkillEditorSystem skillEditorSystem)
+        public Dictionary<int, AnimationFrameData> FrameDataDic => skillEditorSystem.SkillConfig.skillAnimationData.FrameDataDic;
+        public AnimationTrack(ISkillEditorSystem skillEditorSystem,ISkillEditorWindow skillEditorWindow)
         {
             this.skillEditorSystem = skillEditorSystem;
-
+            this.skillEditorWindow = skillEditorWindow;
         }
         public override void Init(VisualElement menuParent, VisualElement trackParent, int frameUnitWidth)
         {
@@ -50,37 +52,72 @@ namespace AkieEmpty.SkillEditor
         private void CreateItem(int frameIndex, AnimationFrameData animationFrameData)
         {
             AnimationTrackItem trackItem = new AnimationTrackItem();
-            trackItem.Init(skillTrackStyle, animationFrameData);
+            trackItem.Init(frameIndex,frameUnitWidth, this , skillTrackStyle, animationFrameData);
+            trackItem.SetApplyDragAction(ApplyDrag);
+            trackItem.SetMoveTrackItemAction(MoveTrackItem);
+            trackItem.SetShowTrackInspecotrAction(ShowTrackInspector);
             trackItemDic.Add(frameIndex, trackItem);
         }
 
-        private void OnDragUpdate(DragUpdatedEvent evt)
+      
+
+        public override void DeleteTrackItem(int frameIndex)
         {
-            // 监听用户拖拽的是否是动画
-            UnityEngine.Object[] objs = DragAndDrop.objectReferences;
-            AnimationClip clip = objs[0] as AnimationClip;
-            if (clip != null)
+            FrameDataDic.Remove(frameIndex);
+            if(trackItemDic.Remove(frameIndex,out AnimationTrackItem trackItem))
             {
-                DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+                skillTrackStyle.RemoveItem(trackItem.TrackItemStyle.root);
             }
+            skillEditorSystem.SaveConfig();
         }
-        private void OnDragExited(DragExitedEvent evt)
+
+        private void ShowTrackInspector(TrackItemBase trackItem)
         {
-            // 监听用户拖拽的是否是动画
-            UnityEngine.Object[] objs = DragAndDrop.objectReferences;
-            AnimationClip clip = objs[0] as AnimationClip;
-            if (clip != null)
+            skillEditorWindow.ShowTrackInspector(this, trackItem);
+        }
+
+        private void MoveTrackItem(int startDragFrameIndex, float offsetPos,AnimationFrameData animationFrameData)
+        {
+            int offsetFrame = Mathf.RoundToInt(offsetPos / frameUnitWidth);
+            int targetFrameIndex = startDragFrameIndex + offsetFrame;
+            bool checkDrag = false;
+            if (targetFrameIndex < 0) return; // 不考虑拖拽到负数的情况
+         
+            //检查左边
+            if (offsetFrame < 0) checkDrag = skillEditorSystem.CheckFrameIndexOnDrag(startDragFrameIndex, targetFrameIndex,  true);
+            //检查右边
+            else if (offsetFrame > 0) checkDrag = skillEditorSystem.CheckFrameIndexOnDrag(startDragFrameIndex, targetFrameIndex + animationFrameData.durationFrame,  false);
+            else return;
+            if (checkDrag)
             {
-                int selectFrameIndex = SkillEditorSystem.GetFrameIndexByMousePos(evt.localMousePosition.x,skillEditorSystem.SkillEditorConfig.CurrentFrameUnitWidth);
-                PlaceAnimationOnTrack(selectFrameIndex, clip);
+                AnimationTrackItem trackItem = trackItemDic[startDragFrameIndex];
+                // 如果超过右侧边界，拓展边界
+                skillEditorSystem.CheckMaxFrameCount(targetFrameIndex, animationFrameData.durationFrame);
+                // 确定修改的数据
+                trackItem.FrameIndex = targetFrameIndex;
+                // 刷新视图
+                trackItem.ResetView(frameUnitWidth);
             }
         }
 
+        private void ApplyDrag(int startDragFrameIndex, int frameIndex)
+        {
+            if (startDragFrameIndex == frameIndex) return;
+
+            if (FrameDataDic.Remove(startDragFrameIndex, out AnimationFrameData animationFrameData))
+            {
+                FrameDataDic.Add(frameIndex, animationFrameData);
+                trackItemDic.Remove(startDragFrameIndex, out AnimationTrackItem animationTrackItem);
+                trackItemDic.Add(frameIndex, animationTrackItem);
+                skillEditorSystem.SaveConfig();
+            }
+        }
+      
         private void PlaceAnimationOnTrack(int selectFrameIndex, AnimationClip clip)
         {
             // 放置动画资源
             // 当前选中的位置检测能否放置动画
-            
+
             bool canPlace = true;
             int durationFrame = -1; // -1代表可以用原本AniamtionClip的持续时间
             int clipFrameCount = (int)(clip.length * clip.frameRate);
@@ -138,5 +175,38 @@ namespace AkieEmpty.SkillEditor
                 CreateItem(selectFrameIndex, animationEvent);
             }
         }
+        public override void OnConfigChanged()
+        {
+            foreach (var item in trackItemDic.Values)
+            {
+                item.OnConfigChanged();
+            }
+        }
+
+        #region 鼠标交互
+        private void OnDragUpdate(DragUpdatedEvent evt)
+        {
+            // 监听用户拖拽的是否是动画
+            UnityEngine.Object[] objs = DragAndDrop.objectReferences;
+            AnimationClip clip = objs[0] as AnimationClip;
+            if (clip != null)
+            {
+                DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+            }
+        }
+        private void OnDragExited(DragExitedEvent evt)
+        {
+            // 监听用户拖拽的是否是动画
+            UnityEngine.Object[] objs = DragAndDrop.objectReferences;
+            AnimationClip clip = objs[0] as AnimationClip;
+            if (clip != null)
+            {
+                int selectFrameIndex = SkillEditorSystem.GetFrameIndexByMousePos(evt.localMousePosition.x,skillEditorSystem.SkillEditorConfig.CurrentFrameUnitWidth);
+                PlaceAnimationOnTrack(selectFrameIndex, clip);
+            }
+        }
+        #endregion
+
+       
     }
 }

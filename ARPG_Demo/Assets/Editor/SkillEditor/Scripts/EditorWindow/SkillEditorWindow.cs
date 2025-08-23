@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using AkieEmpty.CharacterSystem;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEditor.UIElements;
@@ -14,16 +15,20 @@ namespace AkieEmpty.SkillEditor
     public interface ISkillEditorWindow
     {
         public SkillConfig SkillConfig {  get; }
+
+        public void ResetTrackData();
+        public void ShowTrackInspector(TrackBase track, TrackItemBase trackItem);
         public void UpdateConsoleField();
         public void UpdateTimerShaftView();
         public void UpdateTrackContentSzie();
     }
     public class SkillEditorWindow : EditorWindow, ISkillEditorWindow
     {
-        private const string EditorWindowPath = "Assets/Editor/SkillEditor/EditorWindow/Assets/SkillEditorWindow.uxml";
+        private const string EditorWindowPath = "Assets/Editor/SkillEditor/Assets/EditorWindow/SkillEditorWindow.uxml";
         private const string SkillEditorScenePath = "Assets/Editor/SkillEditor/Scene/SkillEditorScene.unity";
+        private SkillEditorInspector skillEditorInspector;
+        private static SkillEditorWindow editorWindow;
         private SkillEditorConfig skillEditorConfig;
-       
         private SkillEditorSystem editorSystem;
         private SkillConfig skillConfig;
         public SkillConfig SkillConfig { get => skillConfig; }
@@ -34,8 +39,8 @@ namespace AkieEmpty.SkillEditor
         [MenuItem("SkillEditor/SkillEditorWindow")]
         public static void ShowExample()
         {
-            SkillEditorWindow wnd = GetWindow<SkillEditorWindow>();
-            wnd.titleContent = new GUIContent("技能编辑器");
+            editorWindow = GetWindow<SkillEditorWindow>();
+            editorWindow.titleContent = new GUIContent("技能编辑器");
         }
 
         public void CreateGUI()
@@ -49,11 +54,12 @@ namespace AkieEmpty.SkillEditor
             editorSystem = new SkillEditorSystem(this, skillEditorConfig);
 
 
-
             InitMenu();
             InitTimeShift();
             InitTrackView();
             InitConsole();
+
+            if(skillConfig != null)skillConfigObjectField.value = skillConfig;
         }
      
         #region Menu
@@ -79,8 +85,10 @@ namespace AkieEmpty.SkillEditor
             previewCharacterPrefabObjectField.RegisterValueChangedCallback(PreviewCharacterPrefabObjectFieldValueChanged);
             previewCharacterObjectField.RegisterValueChangedCallback(PreviewCharacterObjectFieldValueChanged);
             skillConfigObjectField.RegisterValueChangedCallback(SkillConfigObjectFieldValueChanged);
+
+           
         }
-        private void LoadEditorSceneButtonClick()
+        private void LoadEditorSceneButtonClick() 
         {
             editorSystem.LoadEditorScene(SkillEditorScenePath);
         }
@@ -153,19 +161,6 @@ namespace AkieEmpty.SkillEditor
             timerShaft.RegisterCallback<MouseUpEvent>(TimerShaftMouseUp);
             timerShaft.RegisterCallback<MouseOutEvent>(TimerShaftMouseOut);
         }
-        private void UnInitTimeShaft()
-        {
-            if (selectLine != null) selectLine.onGUIHandler -= DrawSelectLine;
-
-            if (timerShaft == null) return;
-            timerShaft.onGUIHandler -= DrawTimerShaft;
-
-            timerShaft.UnregisterCallback<WheelEvent>(TimerShaftWheel);
-            timerShaft.UnregisterCallback<MouseDownEvent>(TimerShaftMouseDown);
-            timerShaft.UnregisterCallback<MouseMoveEvent>(TimerShaftMouseMove);
-            timerShaft.UnregisterCallback<MouseUpEvent>(TimerShaftMouseUp);
-            timerShaft.UnregisterCallback<MouseOutEvent>(TimerShaftMouseOut);
-        }
         private void DrawTimerShaft()
         {
             Handles.BeginGUI();
@@ -208,6 +203,8 @@ namespace AkieEmpty.SkillEditor
                 SkillEditorConfig.maxFrameWidthLV * SkillEditorConfig.StandFrameUnitWidth);
 
             UpdateTimerShaftView();
+            // 刷新轨道
+            ResetTrack();
             UpdateTrackContentSzie();
         }
         private void TimerShaftMouseDown(MouseDownEvent evt)
@@ -307,12 +304,13 @@ namespace AkieEmpty.SkillEditor
 
         private void InitTrack()
         {
+            ResetTrack(); 
             InitAnimationTrack();
         }
        
         private void InitAnimationTrack()
         {
-            AnimationTrack animationTrack = new AnimationTrack(editorSystem);
+            AnimationTrack animationTrack = new AnimationTrack(editorSystem,this);
             animationTrack.Init(trackMenuList,trackContentList,skillEditorConfig.CurrentFrameUnitWidth);
             trackList.Add(animationTrack);
         }
@@ -330,12 +328,26 @@ namespace AkieEmpty.SkillEditor
                 trackList[i].ResetView(skillEditorConfig.CurrentFrameUnitWidth);
             }
         }
+        public void ResetTrackData()
+        {
+            // 重新引用一下数据
+            for (int i = 0; i < trackList.Count; i++)
+            {
+                trackList[i].OnConfigChanged();
+            }
+        }
         public void UpdateTrackContentSzie()
         {
             trackContentList.style.width = skillEditorConfig.CurrentFrameUnitWidth * editorSystem.CurrentMaxFrameCount;
 
         }
         #endregion
+
+        public void ShowTrackInspector(TrackBase track, TrackItemBase trackItem)
+        {
+            SkillEditorInspector.SetTrackItem(editorSystem,trackItem,track);
+            Selection.activeObject = this;
+        }
     }
 }
 

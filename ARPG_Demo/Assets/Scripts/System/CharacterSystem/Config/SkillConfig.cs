@@ -42,6 +42,7 @@ namespace AkieEmpty.CharacterSystem
 
 #if UNITY_EDITOR
         [LabelText("³ÖÐøÖ¡Êý")] public int durationFrame;
+        public bool applyRootMotion;
 #endif
     }
 }

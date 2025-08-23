@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using AkieEmpty.CharacterSystem;
+﻿using AkieEmpty.CharacterSystem;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -24,9 +23,11 @@ namespace AkieEmpty.SkillEditor
     {
         public SkillConfig SkillConfig { get; }
         public SkillEditorConfig SkillEditorConfig { get; }
+        public bool CheckFrameIndexOnDrag(int selfIndex, int targetIndex, bool isLeft);
+        public void CheckMaxFrameCount(int frameIndex, int durationFrame);
         public void SaveConfig();
     }
-    public class SkillEditorSystem :Object, ISkillEditorSystem
+    public class SkillEditorSystem : ISkillEditorSystem
     {
         
         private readonly ISkillEditorWindow editorWindow;
@@ -77,16 +78,16 @@ namespace AkieEmpty.SkillEditor
             // 值相等，设置无效
             if (previewObj == currentPreviewCharacterObj) return currentPreviewCharacterObj;
             // 销毁旧的
-            if (currentPreviewCharacterObj != null) DestroyImmediate(currentPreviewCharacterObj);
+            if (currentPreviewCharacterObj != null) SkillEditorWindow.DestroyImmediate(currentPreviewCharacterObj);
             Transform parent = GameObject.Find(previewCharacterParentPath).transform;
             if (parent != null && parent.childCount > 0)
             {
-                DestroyImmediate(parent.GetChild(0).gameObject);
+                SkillEditorWindow.DestroyImmediate(parent.GetChild(0).gameObject);
             }
             // 实例化新的
             if (previewObj != null)
             {
-                currentPreviewCharacterObj = Instantiate(previewObj, Vector3.zero, Quaternion.identity, parent);
+                currentPreviewCharacterObj = SkillEditorWindow.Instantiate(previewObj, Vector3.zero, Quaternion.identity, parent);
                 currentPreviewCharacterObj.transform.localRotation = Quaternion.Euler(0, 0, 0);
                 return currentPreviewCharacterObj;
             }
@@ -166,8 +167,16 @@ namespace AkieEmpty.SkillEditor
         {
             return Mathf.RoundToInt(x / frameUnitWidth);
         }
+        public void CheckMaxFrameCount(int frameIndex, int durationFrame)
+        {
+            // 如果超过右侧边界，拓展边界
+            if (frameIndex + durationFrame >SkillConfig.maxFrameCount)
+            {
+                // 保存配置导致对象无效，重新引用
+                CurrentMaxFrameCount = frameIndex + durationFrame;
+            }
+        }
 
-      
         #endregion
 
         #region Console
@@ -196,15 +205,40 @@ namespace AkieEmpty.SkillEditor
         }
         #endregion
 
+        #region Track
+        public bool CheckFrameIndexOnDrag(int selfIndex, int targetIndex, bool isLeft)
+        {
+            foreach (var item in SkillConfig.skillAnimationData.FrameDataDic)
+            {
+                if (item.Key == selfIndex) continue;
+                // 向左移动 && 原先在其右边 && 目标没有重叠
+                if (isLeft && selfIndex > item.Key && targetIndex < item.Key + item.Value.durationFrame)
+                {
+                    return false;
+
+                }
+                // 向右移动 && 原先在其左边 && 目标没有重叠
+                else if (!isLeft && selfIndex < item.Key && targetIndex > item.Key)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        #endregion
+
         public void SaveConfig()
         {
             if (SkillConfig != null)
             {
                 EditorUtility.SetDirty(SkillConfig);
                 AssetDatabase.SaveAssetIfDirty(SkillConfig);
+                editorWindow.ResetTrackData();
             }
         }
 
+      
 
+       
     }
 }

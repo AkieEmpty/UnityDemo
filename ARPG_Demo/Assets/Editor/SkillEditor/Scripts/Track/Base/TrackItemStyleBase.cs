@@ -21,5 +21,6 @@ namespace AkieEmpty.SkillEditor
             pos.x = x;
             root.transform.position = pos;
         }
+
     }
 }

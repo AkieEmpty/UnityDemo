@@ -12,8 +12,8 @@ namespace AkieEmpty.SkillEditor
     /// </summary>
     public class SingeleLineTrackStyle : TrackStyleBase
     {
-        private const string MenuAssetPath = "Assets/Editor/SkillEditor/Track/Assets/SinglineTrackStyle/SingleLineTrackMenu.uxml";
-        private const string TrackAssetPath = "Assets/Editor/SkillEditor/Track/Assets/SinglineTrackStyle/SingleLineTrackContent.uxml";
+        private const string MenuAssetPath = "Assets/Editor/SkillEditor/Assets/Track/SinglineTrackStyle/SingleLineTrackMenu.uxml";
+        private const string TrackAssetPath = "Assets/Editor/SkillEditor/Assets/Track/SinglineTrackStyle/SingleLineTrackContent.uxml";
         public void Init(VisualElement trackMenuParent, VisualElement trackContentParent, string title)
         {
             this.trackMenuParent = trackMenuParent;

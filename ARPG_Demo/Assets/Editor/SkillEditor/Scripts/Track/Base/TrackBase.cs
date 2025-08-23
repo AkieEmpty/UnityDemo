@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,5 +25,8 @@ namespace AkieEmpty.SkillEditor
         {
             this.frameUnitWidth = frameUnitWidth;
         }
+        public virtual void DeleteTrackItem(int frameIndex) { }
+
+        public virtual void OnConfigChanged() { }
     }
 }
