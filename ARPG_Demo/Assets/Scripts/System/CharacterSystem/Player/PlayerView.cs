@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace AkieEmpty.CharacterSystem
 {
-    public class PlayerView:CharacterViewBase
+    public class PlayerView : CharacterViewBase
     {
-
-       
+      
     }
 }

@@ -12,15 +12,16 @@ namespace AkieEmpty.CharacterSystem
     {
         public override void Enter()
         {
-            playerController.PlayAnimation("Idle");
+            AnimationClip idleClip = GetAnimationByName("Idle");
+            AnimationController.PlaySingleAniamtion(idleClip);
         }
 
         public override void Update()
         {
-            Vector2 input = PlayerInput.GetMoveInput();
+            Vector2 input = PlayerInput.GetMoveAxis();
             if (Mathf.Abs(input.x) > 0 || Mathf.Abs(input.y) > 0)
             {
-                playerController.ChangedState(PlayerState.Move);
+                PlayerController.ChangedState(PlayerState.Move);
             }
         }
     }

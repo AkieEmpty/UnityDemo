@@ -1,21 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AkieEmpty.Animations;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace AkieEmpty.CharacterSystem
 {
-    public abstract class CharacterViewBase : SerializedMonoBehaviour
+    public abstract class CharacterViewBase : MonoBehaviour
     {
-        [SerializeField] protected AnimatonController animatonController;
-        public virtual void Init()
+        [SerializeField] private Animator animator;
+        [SerializeField] private AnimationController animatonController;
+        public AnimationController AnimationController => animatonController;
+        private CharacterConfig characterConfig;
+    
+
+
+        
+        public virtual void Init(CharacterConfig characterConfig)
         {
+            this.characterConfig = characterConfig;
             animatonController.Init();
+            
         }
 
-        public void PlayAnimation(AnimationClip clip)
-        {
-            animatonController.PlaySingleAniamtion(clip);
-        }
+       
+       
+       
+        
     }
 }

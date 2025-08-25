@@ -26,7 +26,6 @@ namespace AkieEmpty.SkillEditor
     {
         private const string EditorWindowPath = "Assets/Editor/SkillEditor/Assets/EditorWindow/SkillEditorWindow.uxml";
         private const string SkillEditorScenePath = "Assets/Editor/SkillEditor/Scene/SkillEditorScene.unity";
-        private SkillEditorInspector skillEditorInspector;
         private static SkillEditorWindow editorWindow;
         private SkillEditorConfig skillEditorConfig;
         private SkillEditorSystem editorSystem;
@@ -340,6 +339,13 @@ namespace AkieEmpty.SkillEditor
         {
             trackContentList.style.width = skillEditorConfig.CurrentFrameUnitWidth * editorSystem.CurrentMaxFrameCount;
 
+        }
+        #endregion
+
+        #region Preview
+        public void Update()
+        {
+            editorSystem.UpdateTimer();
         }
         #endregion
 

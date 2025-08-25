@@ -8,6 +8,7 @@ namespace AkieEmpty.CharacterSystem
 {
     public enum PlayerState
     {
-        Idle,Move
+        Idle,Move,
+        Skill
     }
 }

@@ -137,7 +137,8 @@ namespace AkieEmpty.SkillEditor
 
         private void RootMotionToggleValueChanged(ChangeEvent<bool> evt)
         {
-            //
+            (currentTrackItem as AnimationTrackItem).AnimationFrameData.applyRootMotion = evt.newValue;
+            skillEditorSystem.SaveConfig();
         }
 
         private void DurationFieldValueChanged(ChangeEvent<int> evt)

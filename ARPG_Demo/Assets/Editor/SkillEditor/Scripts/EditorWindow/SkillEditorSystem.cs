@@ -1,4 +1,7 @@
-﻿using AkieEmpty.CharacterSystem;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using AkieEmpty.CharacterSystem;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -94,7 +97,7 @@ namespace AkieEmpty.SkillEditor
             return null;
 
         }
-        public void SetPreviewFromSceneObject(ChangeEvent<Object> evt)
+        public void SetPreviewFromSceneObject(ChangeEvent<UnityEngine.Object> evt)
         {
             currentPreviewCharacterObj = (GameObject)evt.newValue;
         }   
@@ -115,6 +118,7 @@ namespace AkieEmpty.SkillEditor
                 currentSelectFrameIndex = Mathf.Clamp(value, 0, CurrentMaxFrameCount);
                 editorWindow.UpdateTimerShaftView();
                 editorWindow.UpdateConsoleField();
+                TickSkill(currentSelectFrameIndex);
             }
         }
         public int CurrentMaxFrameCount
@@ -149,6 +153,7 @@ namespace AkieEmpty.SkillEditor
         }
         public void SelectFrameIndexFromMouseDown(float mouseX)
         {
+            IsPlaying = false;
             int frameIndex = GetFrameIndexByMousePos(mouseX,skillEditorConfig.CurrentFrameUnitWidth);
             if (frameIndex == CurrentSelectFrameIndex) return;
             CurrentSelectFrameIndex = frameIndex;
@@ -182,15 +187,17 @@ namespace AkieEmpty.SkillEditor
         #region Console
         public void PreviouFrame()
         {
+            IsPlaying = false;
             UpdateCurrentSelectFrame(CurrentSelectFrameIndex - 1);
         }
         public void Play()
         {
-
+            IsPlaying = !IsPlaying;
         }
 
         public void NextFrame()
-        {           
+        {
+            IsPlaying = false;
             UpdateCurrentSelectFrame(CurrentSelectFrameIndex + 1);
         }
 
@@ -227,6 +234,177 @@ namespace AkieEmpty.SkillEditor
         }
         #endregion
 
+        #region Preview
+        private DateTime startTime;
+        private int startFrameIndex;
+        private bool isPlaying;
+        public bool IsPlaying
+        {
+            get => isPlaying;
+            set
+            {
+                isPlaying = value;
+                if (isPlaying)
+                {
+                    startTime = DateTime.UtcNow;
+                    startFrameIndex = currentSelectFrameIndex;
+                }
+            }
+        }
+
+        public void UpdateTimer()
+        {
+            if(isPlaying)
+            {
+                float timer =(float)DateTime.UtcNow.Subtract(startTime).TotalSeconds;
+                //确定时间轴的帧率
+                float frameRote;
+                if (SkillConfig != null) frameRote = SkillConfig.frameRote;
+                else frameRote = SkillEditorConfig.defaultFrameRote;
+                //根据时间差计算选中帧
+                CurrentSelectFrameIndex = (int)((timer * frameRote) + startFrameIndex);
+                // 到达最后一帧自动暂停
+                if (CurrentSelectFrameIndex == CurrentMaxFrameCount)
+                {
+                    IsPlaying = false;
+                    CurrentSelectFrameIndex = 0;//回归起点
+                }
+            }
+        }
+
+        public void TickSkill(int frameIndex)
+        {
+            // 驱动技能表现
+            if (SkillConfig != null && currentPreviewCharacterObj != null)
+            {
+                Animator animator = currentPreviewCharacterObj.GetComponent<Animator>();
+                // 根据帧找到目前是哪个动画
+                Dictionary<int, AnimationFrameData> frameData = SkillConfig.skillAnimationData.FrameDataDic;
+
+
+                Vector3 rootMositionTotalPosition = ComputeAccumulatedRootMotion(frameIndex, animator, frameData);
+                SampleAndApplyPose(frameIndex, animator, frameData);
+
+                currentPreviewCharacterObj.transform.position = rootMositionTotalPosition;
+            }
+        }
+
+        /// <summary>
+        /// 采样动画并添加姿势
+        /// </summary>
+        private void SampleAndApplyPose(int frameIndex, Animator animator, Dictionary<int, AnimationFrameData> frameData)
+        {
+
+            // 找到距离这一帧左边最近的一个动画，也就是当前要播放的动画
+            int currentOffset = int.MaxValue; // 最近的索引距离当前选中帧的差距
+            int animationEventIndex = -1;
+            foreach (var item in frameData)
+            {
+                int tempOffset = frameIndex - item.Key;
+                if (tempOffset > 0 && tempOffset < currentOffset)
+                {
+                    currentOffset = tempOffset;
+                    animationEventIndex = item.Key;
+                }
+            }
+            if (animationEventIndex != -1)
+            {
+                AnimationFrameData animationEvent = frameData[animationEventIndex];
+                // 动画资源总帧数
+                float clipFrameCount = animationEvent.animationClip.length * animationEvent.animationClip.frameRate;
+                // 计算当前的播放进度
+                float progress = currentOffset / clipFrameCount;
+                // 循环动画的处理
+                if (progress > 1 && animationEvent.animationClip.isLooping)
+                {
+                    progress -= (int)progress; // 只留小数部分
+                }
+                animator.applyRootMotion = animationEvent.applyRootMotion;
+                animationEvent.animationClip.SampleAnimation(currentPreviewCharacterObj, progress * animationEvent.animationClip.length);
+            }
+        }
+        /// <summary>
+        /// 计算累计根运动位移
+        /// </summary>
+        private Vector3 ComputeAccumulatedRootMotion(int frameIndex, Animator animator, Dictionary<int, AnimationFrameData> frameData)
+        {
+            Vector3 rootMositionTotalPosition = Vector3.zero;
+            // 利用有序字典数据结构来达到有序计算的目的
+            SortedDictionary<int, AnimationFrameData> frameDataSortedDic = new SortedDictionary<int, AnimationFrameData>(frameData);
+            int[] keys = frameDataSortedDic.Keys.ToArray();
+            for (int i = 0; i < keys.Length; i++)
+            {
+                int key = keys[i];
+                AnimationFrameData animationFrameData = frameDataSortedDic[key];
+                // 只考虑根运动配置的动画
+                if (animationFrameData.applyRootMotion == false) continue;
+                int nextKeyFrame = 0;
+                if (i + 1 < keys.Length) nextKeyFrame = keys[i + 1];
+                // 最后一个动画 下一个关键帧计算采用整个技能的帧长度
+                else nextKeyFrame = SkillConfig.maxFrameCount;
+
+                bool isBreak = false;
+                if (nextKeyFrame > frameIndex)
+                {
+                    nextKeyFrame = frameIndex;
+                    isBreak = true;
+                }
+
+                // 持续帧数 = 下一个动画的帧数 - 这个动画的开始时间
+                int durationFrameCount = nextKeyFrame - key;
+                if (durationFrameCount > 0)
+                {
+                    // 动画资源总总帧数
+                    float clipFrameCount = animationFrameData.animationClip.length * SkillConfig.frameRote;
+                    // 计算总的播放进度
+                    float totalProgress = durationFrameCount / clipFrameCount;
+                    // 播放次数
+                    int playTimes = 0;
+                    // 最终一次不完整的播放，也就是进度<1
+                    float lastProgress = 0;
+                    // 只有循环动画才需要多次采样
+                    if (animationFrameData.animationClip.isLooping)
+                    {
+                        playTimes = (int)totalProgress;
+                        lastProgress = totalProgress - (int)totalProgress;
+                    }
+                    else
+                    {
+                        // 不循环的动画，播放进度>1也等于1,
+                        if (totalProgress >= 1)
+                        {
+                            playTimes = 1;
+                            lastProgress = 0;
+                        }
+                        else
+                        {
+                            lastProgress = totalProgress - (int)totalProgress;
+                        }
+                    }
+                    animator.applyRootMotion = true;
+                    // 完整播放部分的采样
+                    if (playTimes >= 1)
+                    {
+                        animationFrameData.animationClip.SampleAnimation(currentPreviewCharacterObj, animationFrameData.animationClip.length);
+                        Vector3 pos = currentPreviewCharacterObj.transform.position;
+                        rootMositionTotalPosition += pos * playTimes;
+                    }
+                    // 不完整的部分采样
+                    if (lastProgress > 0)
+                    {
+                        animationFrameData.animationClip.SampleAnimation(currentPreviewCharacterObj, lastProgress * animationFrameData.animationClip.length);
+                        Vector3 pos = currentPreviewCharacterObj.transform.position;
+                        rootMositionTotalPosition += pos;
+                    }
+                }
+                if (isBreak) break;
+            }
+
+            return rootMositionTotalPosition;
+        }
+
+
+        #endregion
         public void SaveConfig()
         {
             if (SkillConfig != null)

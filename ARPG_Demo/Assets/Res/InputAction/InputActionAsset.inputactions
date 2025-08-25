@@ -13,6 +13,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "WalkAndRun",
+                    "type": "Button",
+                    "id": "e2baedf3-72c8-4139-bed0-58c86df745ed",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -70,6 +79,17 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "09b2c538-0942-44ea-93ed-3cd974017745",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "Tap",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WalkAndRun",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

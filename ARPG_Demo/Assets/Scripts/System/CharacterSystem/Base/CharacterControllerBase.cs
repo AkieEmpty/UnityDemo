@@ -5,14 +5,19 @@ using UnityEngine;
 
 namespace AkieEmpty.CharacterSystem
 {
-    public abstract class CharacterControllerBase : MonoBehaviour,IStateMachineOwner
+    public abstract class CharacterControllerBase<V> : MonoBehaviour,IStateMachineOwner where V: CharacterViewBase
     {
         [SerializeField]protected CharacterController characterController;
-        [SerializeField]protected PlayerView playerView;
+        [SerializeField]protected V view;
         protected StateMachine stateMachine;
+
+       
 
         private void Start()
         {
+            //≤‚ ‘
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
             Init();
         }
         public virtual void Init()
