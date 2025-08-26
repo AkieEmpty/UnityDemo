@@ -18,8 +18,8 @@ MonoBehaviour:
     ReferencedUnityObjects:
     - {fileID: 7400000, guid: 04999d32e59bb414a9578526b20bbdc6, type: 2}
     - {fileID: 7400000, guid: 8c0b13b95c082e0478561965f47883ff, type: 2}
-    - {fileID: 7400000, guid: ee877a59b037cd14faf5014034b64a8a, type: 2}
-    - {fileID: 7400000, guid: 5006accdf7574a1449b2cca3d5f50c5b, type: 2}
+    - {fileID: 7400000, guid: c0e905a92c989fd48ac6af72f962ca67, type: 2}
+    - {fileID: 7400000, guid: 2cecace89775cbb4f9c1e89a716c0c26, type: 2}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -86,7 +86,7 @@ MonoBehaviour:
       Data: 0.25
     - Name: durationFrame
       Entry: 3
-      Data: 84
+      Data: 67
     - Name: applyRootMotion
       Entry: 5
       Data: true
@@ -101,7 +101,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 3
-      Data: 133
+      Data: 116
     - Name: $v
       Entry: 7
       Data: 5|AkieEmpty.CharacterSystem.AnimationFrameData, GameRuntime
@@ -113,10 +113,10 @@ MonoBehaviour:
       Data: 0.25
     - Name: durationFrame
       Entry: 3
-      Data: 64
+      Data: 26
     - Name: applyRootMotion
       Entry: 5
-      Data: true
+      Data: false
     - Name: 
       Entry: 8
       Data: 
@@ -128,7 +128,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 3
-      Data: 197
+      Data: 142
     - Name: $v
       Entry: 7
       Data: 6|AkieEmpty.CharacterSystem.AnimationFrameData, GameRuntime
@@ -140,7 +140,7 @@ MonoBehaviour:
       Data: 0.25
     - Name: durationFrame
       Entry: 3
-      Data: 59
+      Data: 69
     - Name: applyRootMotion
       Entry: 5
       Data: true
@@ -160,5 +160,5 @@ MonoBehaviour:
       Entry: 8
       Data: 
   skillName: 
-  maxFrameCount: 256
+  maxFrameCount: 211
   frameRote: 60

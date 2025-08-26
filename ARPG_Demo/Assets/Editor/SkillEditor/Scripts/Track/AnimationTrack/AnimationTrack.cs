@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using AkieEmpty.CharacterSystem;
 using UnityEditor;
@@ -37,7 +36,12 @@ namespace AkieEmpty.SkillEditor
         public override void ResetView(int frameUnitWidth)
         {
             base.ResetView(frameUnitWidth);
-            skillTrackStyle.RemoveAllItem();
+
+            foreach(var item in trackItemDic)
+            {
+                skillTrackStyle.RemoveItem(item.Value.TrackItemStyle.root);
+            }
+
             trackItemDic.Clear();
 
             if (skillEditorSystem.SkillConfig == null) return;
@@ -46,7 +50,6 @@ namespace AkieEmpty.SkillEditor
             foreach (var item in FrameDataDic)
             {
                 CreateItem(item.Key, item.Value);
-                skillEditorSystem.SaveConfig();
             }
         }
         private void CreateItem(int frameIndex, AnimationFrameData animationFrameData)
@@ -109,6 +112,7 @@ namespace AkieEmpty.SkillEditor
                 FrameDataDic.Add(frameIndex, animationFrameData);
                 trackItemDic.Remove(startDragFrameIndex, out AnimationTrackItem animationTrackItem);
                 trackItemDic.Add(frameIndex, animationTrackItem);
+                SkillEditorInspector.Instance.SetTrackItemFrameIndex(frameIndex);
                 skillEditorSystem.SaveConfig();
             }
         }
@@ -207,6 +211,9 @@ namespace AkieEmpty.SkillEditor
         }
         #endregion
 
-       
+        public override void Destory()
+        {
+            skillTrackStyle.Destory();
+        }
     }
 }

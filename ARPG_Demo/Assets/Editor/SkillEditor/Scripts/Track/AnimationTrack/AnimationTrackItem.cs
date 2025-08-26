@@ -1,10 +1,7 @@
 using System;
 using AkieEmpty.CharacterSystem;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UIElements;
-using static Codice.CM.WorkspaceServer.DataStore.WkTree.WriteWorkspaceTree;
-using static PlasticPipe.Server.MonitorStats;
 
 namespace AkieEmpty.SkillEditor
 {

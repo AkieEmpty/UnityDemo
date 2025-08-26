@@ -44,5 +44,11 @@ namespace AkieEmpty.SkillEditor
 
         #endregion
 
+        public virtual void Destory()
+        {
+            if(trackMenuRoot!=null)trackMenuParent.Remove(trackMenuRoot);
+            if(trackContentRoot!=null)trackContentParent.Remove(trackContentRoot);
+        }
+
     }
 }

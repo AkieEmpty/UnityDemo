@@ -16,6 +16,10 @@ namespace AkieEmpty.SkillEditor
         {
             this.frameUnitWidth = frameUnitWidth;
         }
+        public virtual void Destory()
+        {
+
+        }
         public virtual void ResetView()
         {
             ResetView(frameUnitWidth);

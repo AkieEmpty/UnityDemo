@@ -119,11 +119,11 @@ namespace AkieEmpty.SkillEditor
         private void SkillConfigObjectFieldValueChanged(ChangeEvent<UnityEngine.Object> evt)
         {
             skillConfig = ((SkillConfig)evt.newValue);
-            // 刷新轨道
-            ResetTrack();
             //刷新最大帧数输入框
             if (SkillConfig == null) maxFrameCountField.value = 100;
             else maxFrameCountField.value = SkillConfig.maxFrameCount;
+            // 刷新轨道
+            ResetTrack();
             Selection.activeObject = (SkillConfig)evt.newValue;
         }
         private void ResetSkillConfigObjectField()
@@ -202,9 +202,8 @@ namespace AkieEmpty.SkillEditor
                 SkillEditorConfig.maxFrameWidthLV * SkillEditorConfig.StandFrameUnitWidth);
 
             UpdateTimerShaftView();
-            // 刷新轨道
-            ResetTrack();
             UpdateTrackContentSzie();
+            ResetTrack();
         }
         private void TimerShaftMouseDown(MouseDownEvent evt)
         {
@@ -303,16 +302,53 @@ namespace AkieEmpty.SkillEditor
 
         private void InitTrack()
         {
-            ResetTrack(); 
+            if (skillConfig == null) return;//没有配置不初始化轨道
             InitAnimationTrack();
+            InitAudioTrack();
         }
-       
         private void InitAnimationTrack()
         {
-            AnimationTrack animationTrack = new AnimationTrack(editorSystem,this);
-            animationTrack.Init(trackMenuList,trackContentList,skillEditorConfig.CurrentFrameUnitWidth);
+            AnimationTrack animationTrack = new AnimationTrack(editorSystem, this);
+            animationTrack.Init(trackMenuList, trackContentList, skillEditorConfig.CurrentFrameUnitWidth);
             trackList.Add(animationTrack);
         }
+        private void InitAudioTrack()
+        {
+            AudioTrack audioTrack = new AudioTrack(editorSystem, this);
+            audioTrack.Init(trackMenuList, trackContentList, skillEditorConfig.CurrentFrameUnitWidth);
+            trackList.Add(audioTrack);
+        }
+        private void DestoryTrack()
+        {
+            for (int i = 0; i < trackList.Count; i++)
+            {
+                trackList[i].Destory();
+            }
+            trackList.Clear();
+        }
+        private void ResetTrack()
+        { 
+            //如果配置文件是null,清理轨道
+            if (skillConfig==null)
+            {
+                DestoryTrack();
+            }
+            else
+            {
+                //如果轨道列表里面没有数据,说明没有轨道,当前用户是有配置的,需要初始化轨道
+                if (trackList.Count==0)
+                {
+                    InitTrack();
+                }
+                //更新视图
+                for (int i = 0; i < trackList.Count; i++)
+                {
+                    trackList[i].ResetView(skillEditorConfig.CurrentFrameUnitWidth);
+                }
+            }
+          
+        }
+      
 
         private void TrackContentViewScrollViewValueChanged(float value)
         {
@@ -320,13 +356,8 @@ namespace AkieEmpty.SkillEditor
             pos.y = contentContainer.transform.position.y;
             trackMenuList.transform.position = pos;
         }
-        private void ResetTrack()
-        {
-            for (int i = 0; i < trackList.Count; i++)
-            {
-                trackList[i].ResetView(skillEditorConfig.CurrentFrameUnitWidth);
-            }
-        }
+      
+
         public void ResetTrackData()
         {
             // 重新引用一下数据
