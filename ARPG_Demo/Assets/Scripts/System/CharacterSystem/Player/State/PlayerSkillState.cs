@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AkieEmpty.Animations;
-using Codice.Client.BaseCommands.BranchExplorer;
+﻿using AkieEmpty.Animations;
+using AkieEmpty.SkillRuntime;
 using JKFrame;
 using UnityEngine;
 

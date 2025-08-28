@@ -11,7 +11,7 @@ namespace AkieEmpty.SkillEditor
 {
     public class AnimationTrackItemStyle : TrackItemStyleBase
     {
-        private const string trackItemAssetPath = "Assets/Editor/SkillEditor/Assets/Track/AnimationTrack/AnimationTrackItem.uxml";
+        private const string trackItemAssetPath = "Assets/Editor/SkillEditor/Assets/Track/TrackItem/AnimationTrackItem.uxml";
         private Label titleLabel;
         private VisualElement mainDragArea;
         private VisualElement animationOverLine;

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AkieEmpty.CharacterSystem;
-using JKFrame;
+using AkieEmpty.SkillRuntime;
 using UnityEngine;
 
 namespace AkieEmpty.Animations
@@ -45,12 +40,12 @@ namespace AkieEmpty.Animations
             if (animationController == null) return;
             currentFrameIndex += 1;
             //驱动动画
-            if (skillConfig.skillAnimationData.FrameDataDic.TryGetValue(currentFrameIndex, out AnimationFrameData frameData))
+            if (skillConfig.skillAnimationData.FrameDataDic.TryGetValue(currentFrameIndex, out SkillAnimationEvent animationData))
             {
-                if(frameData.applyRootMotion)animationController.SetRootMotionAction(rootMotionAction);
+                if(animationData.applyRootMotion) animationController.SetRootMotionAction(rootMotionAction);
                 else animationController.ClearRootMotionAction();
 
-                animationController.PlaySingleAniamtion(frameData.animationClip,1,0.25F,false,true);
+                animationController.PlaySingleAniamtion(animationData.animationClip,1,0.25F,false,true);
             }
         }
         private void Update()

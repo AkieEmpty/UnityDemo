@@ -5,7 +5,7 @@
         <ui:Button text="基本信息" display-tooltip-when-elided="true" name="BasicInfoButton" style="width: 90px;" />
         <uie:ObjectField label="演示角色预制体" name="PreviewCharacterPrefabObjectField" type="UnityEngine.GameObject, UnityEngine.CoreModule" allow-scene-objects="false" style="flex-grow: 1; flex-shrink: 1; flex-direction: row; align-items: center; justify-content: flex-start; font-size: 15px;" />
         <uie:ObjectField label="演示角色预制体" name="PreviewCharacterObjectField" type="UnityEngine.GameObject, UnityEngine.CoreModule" allow-scene-objects="true" style="flex-grow: 1; flex-shrink: 1; flex-direction: row; align-items: center; justify-content: flex-start; font-size: 15px;" />
-        <uie:ObjectField label="技能配置文件" name="SkillConfigObjectField" type="AkieEmpty.CharacterSystem.SkillConfig, GameRuntime" allow-scene-objects="false" style="flex-grow: 1; flex-shrink: 1; align-items: center; margin-left: 15px; font-size: 15px;" />
+        <uie:ObjectField label="技能配置文件" name="SkillConfigObjectField" type="AkieEmpty.SkillRuntime.SkillConfig, GameRuntime" allow-scene-objects="false" style="flex-grow: 1; flex-shrink: 1; align-items: center; margin-left: 15px; font-size: 15px;" />
     </ui:VisualElement>
     <ui:VisualElement name="Content" style="flex-grow: 0; flex-direction: row; height: auto; width: auto; flex-shrink: 1;">
         <ui:VisualElement name="Left" style="width: 200px; min-width: 200px; border-right-width: 0.5px; border-right-color: rgb(32, 32, 32);">

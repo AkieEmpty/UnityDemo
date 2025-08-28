@@ -4,6 +4,6 @@
             <ui:Label text="音效配置" display-tooltip-when-elided="true" name="Title" style="height: 100%; -unity-text-align: middle-center; font-size: 15px;" />
             <ui:Button text="+" display-tooltip-when-elided="true" name="AddButton" style="font-size: 20px; position: absolute; right: 4px; width: 30px; height: 100%; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; border-bottom-left-radius: 0; margin-top: 0; margin-right: 0; margin-left: 0; margin-bottom: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; padding-left: 0; color: rgb(8, 255, 0);" />
         </ui:VisualElement>
-        <ui:VisualElement name="TrackMenuList" style="height: auto;" />
+        <ui:VisualElement name="TrackMenuList" style="height: auto; margin-top: 5px;" />
     </ui:VisualElement>
 </ui:UXML>

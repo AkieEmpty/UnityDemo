@@ -80,7 +80,9 @@ namespace AkieEmpty.SkillEditor
         private Toggle rootMotionToggle;
         private Label isLoopLable;
         private IntegerField durationField;
-
+        private FloatField transitionTimeField;
+        private int oldDurationValue;
+        private float oldTransitionTimeValue;
         private void DrawAniamtionTrackItem(AnimationTrackItem animationTrackItem)
         {
             trackItemFrameIndex = animationTrackItem.FrameIndex;
@@ -100,13 +102,15 @@ namespace AkieEmpty.SkillEditor
             // 轨道长度
             durationField = new IntegerField("轨道长度");
             durationField.value = animationTrackItem.AnimationFrameData.durationFrame;
-            durationField.RegisterValueChangedCallback(DurationFieldValueChanged);
+            durationField.RegisterCallback<FocusInEvent>(DurationFieldFocusIn);
+            durationField.RegisterCallback<FocusOutEvent>(DurationFieldFocusOut);
             root.Add(durationField);
 
             // 过渡时间
-            FloatField transitionTimeField = new FloatField("过渡时间");
+            transitionTimeField = new FloatField("过渡时间");
             transitionTimeField.value = animationTrackItem.AnimationFrameData.transitionTime;
-            transitionTimeField.RegisterValueChangedCallback(TransitionTimeFieldValueChanged);
+            durationField.RegisterCallback<FocusInEvent>(TransitionTimeFieldFocusIn);
+            durationField.RegisterCallback<FocusOutEvent>(TransitionTimeFieldFocusOut);
             root.Add(transitionTimeField);
 
             // 动画相关的信息
@@ -140,31 +144,44 @@ namespace AkieEmpty.SkillEditor
             (currentTrackItem as AnimationTrackItem).AnimationFrameData.applyRootMotion = evt.newValue;
             skillEditorSystem.SaveConfig();
         }
-
-        private void DurationFieldValueChanged(ChangeEvent<int> evt)
+        //焦点进入
+        private void DurationFieldFocusIn(FocusInEvent evt)
         {
-            int value = evt.newValue;
-            // 安全校验
-            if (skillEditorSystem.CheckFrameIndexOnDrag(trackItemFrameIndex + value, trackItemFrameIndex, false))
+            oldDurationValue = durationField.value;
+        }
+        //焦点退出
+        private void DurationFieldFocusOut(FocusOutEvent evt)
+        {
+            if(oldDurationValue!=durationField.value)
             {
-                // 修改数据，刷新视图
-                (currentTrackItem as AnimationTrackItem).AnimationFrameData.durationFrame = value;
-                int frameIndex = (currentTrackItem as AnimationTrackItem).FrameIndex;
-                skillEditorSystem.CheckMaxFrameCount(frameIndex, value);
-                skillEditorSystem.SaveConfig();
-                currentTrackItem.ResetView();
-            }
-            else
-            {
-                durationField.value = evt.previousValue;
+                int value = durationField.value;
+                // 安全校验
+                if (skillEditorSystem.CheckFrameIndexOnDrag(trackItemFrameIndex + value, trackItemFrameIndex, false))
+                {
+                    // 修改数据，刷新视图
+                    ((AnimationTrackItem)currentTrackItem).AnimationFrameData.durationFrame = value;
+                    int frameIndex = (currentTrackItem as AnimationTrackItem).FrameIndex;
+                    skillEditorSystem.CheckMaxFrameCount(frameIndex, value);
+                    skillEditorSystem.SaveConfig();
+                    currentTrackItem.ResetView();
+                }
+                else
+                {
+                    durationField.value = oldDurationValue;
+                }
             }
         }
-
-        private void TransitionTimeFieldValueChanged(ChangeEvent<float> evt)
+        private void TransitionTimeFieldFocusIn(FocusInEvent evt)
         {
-            (currentTrackItem as AnimationTrackItem).AnimationFrameData.transitionTime = evt.newValue;
+            oldTransitionTimeValue = transitionTimeField.value;
         }
-
+        private void TransitionTimeFieldFocusOut(FocusOutEvent evt)
+        {
+            if(oldDurationValue!= transitionTimeField.value)
+            {
+                ((AnimationTrackItem)currentTrackItem).AnimationFrameData.transitionTime = transitionTimeField.value;
+            }
+        }
         private void DeleteButtonClick()
         {
             currentTrack.DeleteTrackItem(trackItemFrameIndex); // 此函数提供保存和刷新视图逻辑

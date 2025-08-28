@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AkieEmpty.CharacterSystem;
+using AkieEmpty.SkillRuntime;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -279,7 +279,7 @@ namespace AkieEmpty.SkillEditor
             {
                 Animator animator = currentPreviewCharacterObj.GetComponent<Animator>();
                 // 根据帧找到目前是哪个动画
-                Dictionary<int, AnimationFrameData> frameData = SkillConfig.skillAnimationData.FrameDataDic;
+                Dictionary<int,SkillAnimationEvent> frameData = SkillConfig.skillAnimationData.FrameDataDic;
 
 
                 Vector3 rootMositionTotalPosition = ComputeAccumulatedRootMotion(frameIndex, animator, frameData);
@@ -292,7 +292,7 @@ namespace AkieEmpty.SkillEditor
         /// <summary>
         /// 采样动画并添加姿势
         /// </summary>
-        private void SampleAndApplyPose(int frameIndex, Animator animator, Dictionary<int, AnimationFrameData> frameData)
+        private void SampleAndApplyPose(int frameIndex, Animator animator, Dictionary<int, SkillAnimationEvent> frameData)
         {
 
             // 找到距离这一帧左边最近的一个动画，也就是当前要播放的动画
@@ -309,7 +309,7 @@ namespace AkieEmpty.SkillEditor
             }
             if (animationEventIndex != -1)
             {
-                AnimationFrameData animationEvent = frameData[animationEventIndex];
+                SkillAnimationEvent animationEvent = frameData[animationEventIndex];
                 // 动画资源总帧数
                 float clipFrameCount = animationEvent.animationClip.length * animationEvent.animationClip.frameRate;
                 // 计算当前的播放进度
@@ -326,16 +326,16 @@ namespace AkieEmpty.SkillEditor
         /// <summary>
         /// 计算累计根运动位移
         /// </summary>
-        private Vector3 ComputeAccumulatedRootMotion(int frameIndex, Animator animator, Dictionary<int, AnimationFrameData> frameData)
+        private Vector3 ComputeAccumulatedRootMotion(int frameIndex, Animator animator, Dictionary<int, SkillAnimationEvent> frameData)
         {
             Vector3 rootMositionTotalPosition = Vector3.zero;
             // 利用有序字典数据结构来达到有序计算的目的
-            SortedDictionary<int, AnimationFrameData> frameDataSortedDic = new SortedDictionary<int, AnimationFrameData>(frameData);
+            SortedDictionary<int, SkillAnimationEvent> frameDataSortedDic = new SortedDictionary<int, SkillAnimationEvent>(frameData);
             int[] keys = frameDataSortedDic.Keys.ToArray();
             for (int i = 0; i < keys.Length; i++)
             {
                 int key = keys[i];
-                AnimationFrameData animationFrameData = frameDataSortedDic[key];
+                SkillAnimationEvent animationFrameData = frameDataSortedDic[key];
                 // 只考虑根运动配置的动画
                 if (animationFrameData.applyRootMotion == false) continue;
                 int nextKeyFrame = 0;

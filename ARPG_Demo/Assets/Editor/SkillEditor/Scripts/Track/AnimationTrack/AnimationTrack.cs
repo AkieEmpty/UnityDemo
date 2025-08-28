@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using AkieEmpty.CharacterSystem;
+using AkieEmpty.SkillRuntime;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -16,7 +16,7 @@ namespace AkieEmpty.SkillEditor
         private readonly ISkillEditorWindow skillEditorWindow;
         private readonly Dictionary<int, AnimationTrackItem> trackItemDic = new Dictionary<int, AnimationTrackItem>();
         private SingeleLineTrackStyle skillTrackStyle;
-        public Dictionary<int, AnimationFrameData> FrameDataDic => skillEditorSystem.SkillConfig.skillAnimationData.FrameDataDic;
+        public Dictionary<int, SkillAnimationEvent> FrameDataDic => skillEditorSystem.SkillConfig.skillAnimationData.FrameDataDic;
         public AnimationTrack(ISkillEditorSystem skillEditorSystem,ISkillEditorWindow skillEditorWindow)
         {
             this.skillEditorSystem = skillEditorSystem;
@@ -52,7 +52,7 @@ namespace AkieEmpty.SkillEditor
                 CreateItem(item.Key, item.Value);
             }
         }
-        private void CreateItem(int frameIndex, AnimationFrameData animationFrameData)
+        private void CreateItem(int frameIndex, SkillAnimationEvent animationFrameData)
         {
             AnimationTrackItem trackItem = new AnimationTrackItem();
             trackItem.Init(frameIndex,frameUnitWidth, this , skillTrackStyle, animationFrameData);
@@ -79,7 +79,7 @@ namespace AkieEmpty.SkillEditor
             skillEditorWindow.ShowTrackInspector(this, trackItem);
         }
 
-        private void MoveTrackItem(int startDragFrameIndex, float offsetPos,AnimationFrameData animationFrameData)
+        private void MoveTrackItem(int startDragFrameIndex, float offsetPos, SkillAnimationEvent animationFrameData)
         {
             int offsetFrame = Mathf.RoundToInt(offsetPos / frameUnitWidth);
             int targetFrameIndex = startDragFrameIndex + offsetFrame;
@@ -107,7 +107,7 @@ namespace AkieEmpty.SkillEditor
         {
             if (startDragFrameIndex == frameIndex) return;
 
-            if (FrameDataDic.Remove(startDragFrameIndex, out AnimationFrameData animationFrameData))
+            if (FrameDataDic.Remove(startDragFrameIndex, out SkillAnimationEvent animationFrameData))
             {
                 FrameDataDic.Add(frameIndex, animationFrameData);
                 trackItemDic.Remove(startDragFrameIndex, out AnimationTrackItem animationTrackItem);
@@ -164,7 +164,7 @@ namespace AkieEmpty.SkillEditor
                 else durationFrame = clipFrameCount;
 
                 // 构建动画数据
-                AnimationFrameData animationEvent = new AnimationFrameData()
+                SkillAnimationEvent animationData = new SkillAnimationEvent()
                 {
                     animationClip = clip,
                     durationFrame = durationFrame,
@@ -172,11 +172,11 @@ namespace AkieEmpty.SkillEditor
                 };
 
                 // 保存新增的动画数据
-                FrameDataDic.Add(selectFrameIndex, animationEvent);
+                FrameDataDic.Add(selectFrameIndex, animationData);
                 skillEditorSystem.SaveConfig();
 
                 // 创建一个新的Item
-                CreateItem(selectFrameIndex, animationEvent);
+                CreateItem(selectFrameIndex, animationData);
             }
         }
         public override void OnConfigChanged()

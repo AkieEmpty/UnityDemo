@@ -1,5 +1,5 @@
 using System;
-using AkieEmpty.CharacterSystem;
+using AkieEmpty.SkillRuntime;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -10,17 +10,17 @@ namespace AkieEmpty.SkillEditor
         private AnimationTrack track;
         private AnimationTrackItemStyle trackItemStyle;
         private Action<int, int> applyDragAction;
-        private Action<int, float, AnimationFrameData> moveTrackItemAction;
+        private Action<int, float, SkillAnimationEvent> moveTrackItemAction;
         private bool mouseDrag = false;
         private float startDargPosX;
         private int startDragFrameIndex;
-        private AnimationFrameData animationFrameData;
+        private SkillAnimationEvent animationFrameData;
         public int FrameIndex { get; set; }
 
         public AnimationTrackItemStyle TrackItemStyle { get => trackItemStyle; }
-        public AnimationFrameData AnimationFrameData { get=>animationFrameData; }
+        public SkillAnimationEvent AnimationFrameData { get=>animationFrameData; }
 
-        public void Init(int frameIndex,int frameUnitWdith,AnimationTrack track,TrackStyleBase trackStyle, AnimationFrameData animationFrameData)
+        public void Init(int frameIndex,int frameUnitWdith,AnimationTrack track,TrackStyleBase trackStyle,SkillAnimationEvent animationFrameData)
         {
             
             this.FrameIndex = frameIndex;
@@ -47,7 +47,7 @@ namespace AkieEmpty.SkillEditor
         {
             applyDragAction = action;
         }
-        public void SetMoveTrackItemAction(Action<int, float, AnimationFrameData> action)
+        public void SetMoveTrackItemAction(Action<int, float,SkillAnimationEvent> action)
         {
             moveTrackItemAction = action;
         }

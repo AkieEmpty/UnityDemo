@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using AkieEmpty.CharacterSystem;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
+using AkieEmpty.SkillRuntime;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEditor.UIElements;
@@ -11,7 +10,7 @@ using UnityEngine.UIElements;
 
 namespace AkieEmpty.SkillEditor
 {
-   
+
     public interface ISkillEditorWindow
     {
         public SkillConfig SkillConfig {  get; }
@@ -44,6 +43,7 @@ namespace AkieEmpty.SkillEditor
 
         public void CreateGUI()
         {
+            //Debug.Log(typeof(SkillConfig).AssemblyQualifiedName);
             var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(EditorWindowPath);
             VisualElement labelFromUXML = visualTree.Instantiate();
             Root.Add(labelFromUXML);
