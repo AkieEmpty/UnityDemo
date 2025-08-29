@@ -27,7 +27,7 @@ namespace AkieEmpty.SkillEditor
         private const string SkillEditorScenePath = "Assets/Editor/SkillEditor/Scene/SkillEditorScene.unity";
         private static SkillEditorWindow editorWindow;
         private SkillEditorConfig skillEditorConfig;
-        private SkillEditorSystem editorSystem;
+        private SkillEditorSystem skillEditorSystem;
         private SkillConfig skillConfig;
         public SkillConfig SkillConfig { get => skillConfig; }
 
@@ -50,7 +50,7 @@ namespace AkieEmpty.SkillEditor
 
             skillEditorConfig = new SkillEditorConfig();
             SkillConfig.SetValidateAction(ResetSkillConfigObjectField);
-            editorSystem = new SkillEditorSystem(this, skillEditorConfig);
+            skillEditorSystem = new SkillEditorSystem(this, skillEditorConfig);
 
 
             InitMenu();
@@ -89,11 +89,11 @@ namespace AkieEmpty.SkillEditor
         }
         private void LoadEditorSceneButtonClick() 
         {
-            editorSystem.LoadEditorScene(SkillEditorScenePath);
+            skillEditorSystem.LoadEditorScene(SkillEditorScenePath);
         }
         private void LoadOldSceneButtonClick()
         {
-            editorSystem.LoadOldScene();
+            skillEditorSystem.LoadOldScene();
         }
         private void BasicInfoButtonClick()
         {
@@ -109,12 +109,12 @@ namespace AkieEmpty.SkillEditor
             }
             else
             {
-                previewCharacterObjectField.value = editorSystem.CreatePreviewCharacter((GameObject)evt.newValue);
+                previewCharacterObjectField.value = skillEditorSystem.CreatePreviewCharacter((GameObject)evt.newValue);
             }
         }
         private void PreviewCharacterObjectFieldValueChanged(ChangeEvent<UnityEngine.Object> evt)
         {
-            editorSystem.SetPreviewFromSceneObject(evt);
+            skillEditorSystem.SetPreviewFromSceneObject(evt);
         }
         private void SkillConfigObjectFieldValueChanged(ChangeEvent<UnityEngine.Object> evt)
         {
@@ -166,7 +166,7 @@ namespace AkieEmpty.SkillEditor
             Handles.color = Color.white;
             Rect rect = timerShaft.contentRect;
 
-            TimeShaftLayout layout = editorSystem.CalculateTimeShaftLayout(ContentOffsetPos);
+            TimeShaftLayout layout = skillEditorSystem.CalculateTimeShaftLayout(ContentOffsetPos);
             int index = layout.index;
             for (float i = layout.startOffset; i < rect.width; i += skillEditorConfig.CurrentFrameUnitWidth)
             {
@@ -182,10 +182,12 @@ namespace AkieEmpty.SkillEditor
             }
             Handles.EndGUI();
         }
+
+      
         private void DrawSelectLine()
         {
             // 判断当前选中帧是否在视图范围内
-            if(editorSystem.TryGetSelectFrameViewportX(ContentOffsetPos, out float framPosX))
+            if(skillEditorSystem.TryGetSelectFrameViewportX(ContentOffsetPos, out float framPosX))
             {
                 Handles.BeginGUI();
                 Handles.color = Color.white;
@@ -208,12 +210,12 @@ namespace AkieEmpty.SkillEditor
         private void TimerShaftMouseDown(MouseDownEvent evt)
         {
             timerShaftIsMouseEnter = true;
-            editorSystem.SelectFrameIndexFromMouseDown(evt.localMousePosition.x + ContentOffsetPos);
+            skillEditorSystem.SelectFrameIndexFromMouseDown(evt.localMousePosition.x + ContentOffsetPos);
         }
         private void TimerShaftMouseMove(MouseMoveEvent evt)
         {
             if (!timerShaftIsMouseEnter) return;
-            editorSystem.SelectFrameIndexFromMouseDown(evt.localMousePosition.x + ContentOffsetPos);
+            skillEditorSystem.SelectFrameIndexFromMouseDown(evt.localMousePosition.x + ContentOffsetPos);
         }
         private void TimerShaftMouseUp(MouseUpEvent evt) => timerShaftIsMouseEnter = false;
         private void TimerShaftMouseOut(MouseOutEvent evt) => timerShaftIsMouseEnter = false;
@@ -255,32 +257,32 @@ namespace AkieEmpty.SkillEditor
       
         private void OnPreviouFrameButtonClick()
         {
-            editorSystem.PreviouFrame();
+            skillEditorSystem.PreviouFrame();
         }
 
         private void OnPlayButtonClick()
         {
-           editorSystem.Play();
+           skillEditorSystem.Play();
         }
 
         private void OnNextFrameButtonClick()
         {
-            editorSystem.NextFrame();
+            skillEditorSystem.NextFrame();
         }
 
         private void OnCurrentFrameFieldValueChanged(ChangeEvent<int> evt)
         {
-            editorSystem.UpdateCurrentSelectFrame(evt.newValue);
+            skillEditorSystem.UpdateCurrentSelectFrame(evt.newValue);
         }
 
         private void OnMaxFrameCountValueChanged(ChangeEvent<int> evt)
         {
-            editorSystem.UpdateCurrentMaxFrameCount(evt.newValue);
+            skillEditorSystem.UpdateCurrentMaxFrameCount(evt.newValue);
         }
         public void UpdateConsoleField()
         {
-            currentFrameField.value = editorSystem.CurrentSelectFrameIndex;
-            maxFrameCountField.value = editorSystem.CurrentMaxFrameCount;
+            currentFrameField.value = skillEditorSystem.CurrentSelectFrameIndex;
+            maxFrameCountField.value = skillEditorSystem.CurrentMaxFrameCount;
         }
 
         #endregion
@@ -308,14 +310,14 @@ namespace AkieEmpty.SkillEditor
         }
         private void InitAnimationTrack()
         {
-            AnimationTrack animationTrack = new AnimationTrack(editorSystem, this);
-            animationTrack.Init(trackMenuList, trackContentList, skillEditorConfig.CurrentFrameUnitWidth);
+            AnimationTrack animationTrack = new AnimationTrack();
+            animationTrack.Init(skillEditorSystem, this, trackMenuList, trackContentList);
             trackList.Add(animationTrack);
         }
         private void InitAudioTrack()
         {
-            AudioTrack audioTrack = new AudioTrack(editorSystem, this);
-            audioTrack.Init(trackMenuList, trackContentList, skillEditorConfig.CurrentFrameUnitWidth);
+            AudioTrack audioTrack = new AudioTrack();
+            audioTrack.Init(skillEditorSystem,this,trackMenuList, trackContentList);
             trackList.Add(audioTrack);
         }
         private void DestoryTrack()
@@ -343,7 +345,7 @@ namespace AkieEmpty.SkillEditor
                 //更新视图
                 for (int i = 0; i < trackList.Count; i++)
                 {
-                    trackList[i].ResetView(skillEditorConfig.CurrentFrameUnitWidth);
+                    trackList[i].ResetView();
                 }
             }
           
@@ -368,7 +370,7 @@ namespace AkieEmpty.SkillEditor
         }
         public void UpdateTrackContentSzie()
         {
-            trackContentList.style.width = skillEditorConfig.CurrentFrameUnitWidth * editorSystem.CurrentMaxFrameCount;
+            trackContentList.style.width = skillEditorConfig.CurrentFrameUnitWidth * skillEditorSystem.CurrentMaxFrameCount;
 
         }
         #endregion
@@ -376,13 +378,13 @@ namespace AkieEmpty.SkillEditor
         #region Preview
         public void Update()
         {
-            editorSystem.UpdateTimer();
+            skillEditorSystem.UpdateTimer();
         }
         #endregion
 
         public void ShowTrackInspector(TrackBase track, TrackItemBase trackItem)
         {
-            SkillEditorInspector.SetTrackItem(editorSystem,trackItem,track);
+            SkillEditorInspector.SetTrackItem(skillEditorSystem,trackItem,track);
             Selection.activeObject = this;
         }
     }

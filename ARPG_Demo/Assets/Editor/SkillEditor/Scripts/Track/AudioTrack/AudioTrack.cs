@@ -1,5 +1,8 @@
 using AkieEmpty.SkillRuntime;
+using System;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace AkieEmpty.SkillEditor
@@ -8,28 +11,22 @@ namespace AkieEmpty.SkillEditor
     public class AudioTrack : TrackBase
     {
         private const string TrackName = "音效配置";
-        private readonly ISkillEditorSystem skillEditorSystem;
-        private readonly ISkillEditorWindow skillEditorWindow;
         private MultilineTrackStyle skillTrackStyle;
         private List<AudioTrackItem> trackItemList = new List<AudioTrackItem>();
         public List<SkillAudioEvent> FrameDataDic => skillEditorSystem.SkillConfig.skillAudioData.FrameDataDic;
-        public AudioTrack(ISkillEditorSystem skillEditorSystem, ISkillEditorWindow skillEditorWindow) 
+       
+        public override void Init(ISkillEditorSystem skillEditorSystem,ISkillEditorWindow skillEditorWindow, VisualElement menuParent, VisualElement trackParent)
         {
-            this.skillEditorSystem = skillEditorSystem;
-            this.skillEditorWindow = skillEditorWindow;
-        }
-        public override void Init(VisualElement menuParent, VisualElement trackParent, int frameUnitWidth)
-        {
-            base.Init(menuParent, trackParent, frameUnitWidth);
+            base.Init(skillEditorSystem, skillEditorWindow,menuParent, trackParent);
             skillTrackStyle = new MultilineTrackStyle();
             skillTrackStyle.Init(menuParent, trackParent, TrackName, AddChildTrack, SpawnChildTrack, CheckDeleteChildTrack, UpdateChildTrackName);
 
             ResetView();
         }
 
-        public override void ResetView(int frameUnitWidth)
+        #region 视图
+        public override void ResetView()
         {
-            base.ResetView(frameUnitWidth);
             foreach (AudioTrackItem item in trackItemList)
             {
                 item.Destory();
@@ -39,7 +36,6 @@ namespace AkieEmpty.SkillEditor
             {
                 CreateItem(item);
             }
-          
         }
 
         private void CreateItem(SkillAudioEvent skillAudioEvent)
@@ -47,17 +43,24 @@ namespace AkieEmpty.SkillEditor
             AudioTrackItem item = new AudioTrackItem();
             float frameRote = skillEditorSystem.SkillConfig.frameRote;
             MultilineTrackStyle.ChildTrack childTrack = skillTrackStyle.AddChildTrack();
-            item.Init(frameUnitWidth, frameRote, skillAudioEvent, childTrack);
+            item.Init(skillEditorSystem, FrameUnitWidth, skillAudioEvent, childTrack);
             item.SetTrackName(skillAudioEvent.TrackName);
+            item.SetShowTrackInspecotrAction(ShowTrackInspector);
             trackItemList.Add(item);
         }
 
+        private void ShowTrackInspector(TrackItemBase trackItem)
+        {
+            skillEditorWindow.ShowTrackInspector(this, trackItem);
+        }
+        #endregion
 
+        #region 子轨道
         private void AddChildTrack()
         {
             SkillAudioEvent skillAudioEvent = new SkillAudioEvent();
-            CreateItem(skillAudioEvent);
             FrameDataDic.Add(skillAudioEvent);
+            CreateItem(skillAudioEvent);           
             skillEditorSystem.SaveConfig();    
         }
         private bool CheckDeleteChildTrack(int index)
@@ -88,6 +91,10 @@ namespace AkieEmpty.SkillEditor
             FrameDataDic[childTrack.Index].TrackName = newName;
             skillEditorSystem.SaveConfig();
         }
+        #endregion
+
+      
+
         public override void Destory()
         {
             skillTrackStyle.Destory();

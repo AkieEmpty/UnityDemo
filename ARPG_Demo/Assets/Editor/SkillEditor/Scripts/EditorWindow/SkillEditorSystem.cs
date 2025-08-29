@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 namespace AkieEmpty.SkillEditor
 {
     public struct TimeShaftLayout
-    {  
+    {
         public readonly int index;
         public readonly float startOffset;
         public readonly int tickStep;
@@ -21,13 +21,26 @@ namespace AkieEmpty.SkillEditor
             this.tickStep = tickStep;
         }
     }
-
+    //public struct TimeShaftLayout
+    //{
+    //    public readonly int firstVisibleIndex; // 用于从这个帧开始绘制（整数帧索引）
+    //    public readonly float startOffsetPx;   // 第一个绘制帧相对于 content 左边的像素（可以为负）
+    //    public readonly int majorTickStep;     // 主刻度间隔（帧）
+    //    public readonly int minorTickSubdiv;   // 主刻度内细分数量（比如 10 表示主刻度被分为 10 段）
+    //    public TimeShaftLayout(int firstVisibleIndex, float startOffsetPx, int majorTickStep, int minorTickSubdiv)
+    //    {
+    //        this.firstVisibleIndex = firstVisibleIndex;
+    //        this.startOffsetPx = startOffsetPx;
+    //        this.majorTickStep = majorTickStep;
+    //        this.minorTickSubdiv = minorTickSubdiv;
+    //    }
+    //}
     public interface ISkillEditorSystem
     {
         public SkillConfig SkillConfig { get; }
         public SkillEditorConfig SkillEditorConfig { get; }
         public bool CheckFrameIndexOnDrag(int selfIndex, int targetIndex, bool isLeft);
-        public void CheckMaxFrameCount(int frameIndex, int durationFrame);
+        public void CheckAndExtendMaxFrameCount(int frameIndex, int durationFrame);
         public void SaveConfig();
     }
     public class SkillEditorSystem : ISkillEditorSystem
@@ -146,11 +159,17 @@ namespace AkieEmpty.SkillEditor
             if (index > 0) startOffset = skillEditorConfig.CurrentFrameUnitWidth - (ContentOffsetPos % skillEditorConfig.CurrentFrameUnitWidth);
             //计算步长
             int tickStep = SkillEditorConfig.maxFrameWidthLV + 1 - (skillEditorConfig.CurrentFrameUnitWidth / SkillEditorConfig.StandFrameUnitWidth);
+
             tickStep = tickStep / 2; // 可能 1 / 2 = 0的情况
+            
             if (tickStep == 0) tickStep = 1; // 避免为0
+            
+            
 
             return new TimeShaftLayout(index, startOffset, tickStep);
         }
+      
+
         public void SelectFrameIndexFromMouseDown(float mouseX)
         {
             IsPlaying = false;
@@ -172,7 +191,7 @@ namespace AkieEmpty.SkillEditor
         {
             return Mathf.RoundToInt(x / frameUnitWidth);
         }
-        public void CheckMaxFrameCount(int frameIndex, int durationFrame)
+        public void CheckAndExtendMaxFrameCount(int frameIndex, int durationFrame)
         {
             // 如果超过右侧边界，拓展边界
             if (frameIndex + durationFrame >SkillConfig.maxFrameCount)

@@ -12,19 +12,13 @@ namespace AkieEmpty.SkillEditor
     public class AnimationTrack : TrackBase
     {
         private const string TrackName = "动画配置";
-        private readonly ISkillEditorSystem skillEditorSystem;
-        private readonly ISkillEditorWindow skillEditorWindow;
         private readonly Dictionary<int, AnimationTrackItem> trackItemDic = new Dictionary<int, AnimationTrackItem>();
         private SingeleLineTrackStyle skillTrackStyle;
         public Dictionary<int, SkillAnimationEvent> FrameDataDic => skillEditorSystem.SkillConfig.skillAnimationData.FrameDataDic;
-        public AnimationTrack(ISkillEditorSystem skillEditorSystem,ISkillEditorWindow skillEditorWindow)
+
+        public override void Init(ISkillEditorSystem skillEditorSystem, ISkillEditorWindow skillEditorWindow, VisualElement menuParent, VisualElement trackParent)
         {
-            this.skillEditorSystem = skillEditorSystem;
-            this.skillEditorWindow = skillEditorWindow;
-        }
-        public override void Init(VisualElement menuParent, VisualElement trackParent, int frameUnitWidth)
-        {
-            base.Init(menuParent, trackParent, frameUnitWidth);
+            base.Init(skillEditorSystem, skillEditorWindow,menuParent, trackParent);
             skillTrackStyle = new SingeleLineTrackStyle();
             skillTrackStyle.Init(menuParent, trackParent, TrackName);
             skillTrackStyle.RegisterDragUpdatedCallback(OnDragUpdate);
@@ -33,10 +27,8 @@ namespace AkieEmpty.SkillEditor
             ResetView();
         }
 
-        public override void ResetView(int frameUnitWidth)
+        public override void ResetView()
         {
-            base.ResetView(frameUnitWidth);
-
             foreach(var item in trackItemDic)
             {
                 skillTrackStyle.RemoveItem(item.Value.TrackItemStyle.root);
@@ -55,7 +47,7 @@ namespace AkieEmpty.SkillEditor
         private void CreateItem(int frameIndex, SkillAnimationEvent animationFrameData)
         {
             AnimationTrackItem trackItem = new AnimationTrackItem();
-            trackItem.Init(frameIndex,frameUnitWidth, this , skillTrackStyle, animationFrameData);
+            trackItem.Init(frameIndex,FrameUnitWidth, this , skillTrackStyle, animationFrameData);
             trackItem.SetApplyDragAction(ApplyDrag);
             trackItem.SetMoveTrackItemAction(MoveTrackItem);
             trackItem.SetShowTrackInspecotrAction(ShowTrackInspector);
@@ -81,7 +73,7 @@ namespace AkieEmpty.SkillEditor
 
         private void MoveTrackItem(int startDragFrameIndex, float offsetPos, SkillAnimationEvent animationFrameData)
         {
-            int offsetFrame = Mathf.RoundToInt(offsetPos / frameUnitWidth);
+            int offsetFrame = Mathf.RoundToInt(offsetPos / FrameUnitWidth);
             int targetFrameIndex = startDragFrameIndex + offsetFrame;
             bool checkDrag = false;
             if (targetFrameIndex < 0) return; // 不考虑拖拽到负数的情况
@@ -95,11 +87,11 @@ namespace AkieEmpty.SkillEditor
             {
                 AnimationTrackItem trackItem = trackItemDic[startDragFrameIndex];
                 // 如果超过右侧边界，拓展边界
-                skillEditorSystem.CheckMaxFrameCount(targetFrameIndex, animationFrameData.durationFrame);
+                skillEditorSystem.CheckAndExtendMaxFrameCount(targetFrameIndex, animationFrameData.durationFrame);
                 // 确定修改的数据
                 trackItem.FrameIndex = targetFrameIndex;
                 // 刷新视图
-                trackItem.ResetView(frameUnitWidth);
+                trackItem.ResetView(FrameUnitWidth);
             }
         }
 
@@ -187,7 +179,7 @@ namespace AkieEmpty.SkillEditor
             }
         }
 
-        #region 鼠标交互
+        #region 资源拖拽
         private void OnDragUpdate(DragUpdatedEvent evt)
         {
             // 监听用户拖拽的是否是动画

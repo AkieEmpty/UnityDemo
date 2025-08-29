@@ -15,16 +15,14 @@ namespace AkieEmpty.SkillEditor
         private float startDargPosX;
         private int startDragFrameIndex;
         private SkillAnimationEvent animationFrameData;
-        public int FrameIndex { get; set; }
 
         public AnimationTrackItemStyle TrackItemStyle { get => trackItemStyle; }
         public SkillAnimationEvent AnimationFrameData { get=>animationFrameData; }
 
-        public void Init(int frameIndex,int frameUnitWdith,AnimationTrack track,TrackStyleBase trackStyle,SkillAnimationEvent animationFrameData)
+        public void Init(int startFrameIndex,int frameUnitWdith,AnimationTrack track,TrackStyleBase trackStyle,SkillAnimationEvent animationFrameData)
         {
-            
-            this.FrameIndex = frameIndex;
-            this.frameUnitWdith = frameUnitWdith;
+            this.FrameIndex = startFrameIndex;
+            this.frameUnitWidth = frameUnitWdith;
             this.track = track;
             this.animationFrameData = animationFrameData;
             trackItemStyle = new AnimationTrackItemStyle();

@@ -17,6 +17,10 @@ MonoBehaviour:
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 7400000, guid: 50a867922f7d34743b28d8564a51e176, type: 2}
+    - {fileID: 7400000, guid: 8f2d49a26ebef284d828ebe74c29ae50, type: 2}
+    - {fileID: 8300000, guid: 6abc7bb5db3a4ec488ef02bb3be2ac38, type: 3}
+    - {fileID: 8300000, guid: a11d16fd59748324683d6a889c199914, type: 3}
+    - {fileID: 8300000, guid: db5d7647cfb19f643b75f4b18ebe8f1b, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -38,7 +42,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 12
-      Data: 1
+      Data: 2
     - Name: 
       Entry: 7
       Data: 
@@ -67,6 +71,33 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 59
+    - Name: $v
+      Entry: 7
+      Data: 4|AkieEmpty.SkillRuntime.SkillAnimationEvent, GameRuntime
+    - Name: animationClip
+      Entry: 10
+      Data: 1
+    - Name: transitionTime
+      Entry: 4
+      Data: 0.25
+    - Name: durationFrame
+      Entry: 3
+      Data: 59
+    - Name: applyRootMotion
+      Entry: 5
+      Data: false
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 13
       Data: 
     - Name: 
@@ -77,53 +108,32 @@ MonoBehaviour:
       Data: 
     - Name: skillAudioData
       Entry: 7
-      Data: 4|AkieEmpty.SkillRuntime.SkillAudioData, GameRuntime
+      Data: 5|AkieEmpty.SkillRuntime.SkillAudioData, GameRuntime
     - Name: frameDataDic
       Entry: 7
-      Data: 5|Unity.Plastic.Antlr3.Runtime.Misc.ListStack`1[[AkieEmpty.SkillRuntime.SkillAudioEvent,
+      Data: 6|Unity.Plastic.Antlr3.Runtime.Misc.ListStack`1[[AkieEmpty.SkillRuntime.SkillAudioEvent,
         GameRuntime]], Unity.Plastic.Antlr3.Runtime
     - Name: 
       Entry: 12
-      Data: 5
-    - Name: 
-      Entry: 7
-      Data: 6|AkieEmpty.SkillRuntime.SkillAudioEvent, GameRuntime
-    - Name: TrackName
-      Entry: 1
-      Data: "\u97F3\u6548\u8F68\u90531"
-    - Name: Clip
-      Entry: 6
-      Data: 
-    - Name: Voluem
-      Entry: 4
-      Data: 1
-    - Name: FrameIndex
-      Entry: 3
-      Data: -1
-    - Name: PlayCount
-      Entry: 3
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
+      Data: 4
     - Name: 
       Entry: 7
       Data: 7|AkieEmpty.SkillRuntime.SkillAudioEvent, GameRuntime
     - Name: TrackName
       Entry: 1
-      Data: 8
+      Data: "\u97F3\u6548\u8F68\u9053"
     - Name: Clip
-      Entry: 6
-      Data: 
+      Entry: 10
+      Data: 2
     - Name: Voluem
       Entry: 4
       Data: 1
     - Name: FrameIndex
       Entry: 3
-      Data: -1
+      Data: 61
     - Name: PlayCount
       Entry: 3
-      Data: 0
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -134,17 +144,17 @@ MonoBehaviour:
       Entry: 1
       Data: "\u97F3\u6548\u8F68\u9053"
     - Name: Clip
-      Entry: 6
-      Data: 
+      Entry: 10
+      Data: 3
     - Name: Voluem
       Entry: 4
       Data: 1
     - Name: FrameIndex
       Entry: 3
-      Data: -1
+      Data: 0
     - Name: PlayCount
       Entry: 3
-      Data: 0
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -155,17 +165,17 @@ MonoBehaviour:
       Entry: 1
       Data: "\u97F3\u6548\u8F68\u9053"
     - Name: Clip
-      Entry: 6
-      Data: 
+      Entry: 10
+      Data: 4
     - Name: Voluem
       Entry: 4
       Data: 1
     - Name: FrameIndex
       Entry: 3
-      Data: -1
+      Data: 32
     - Name: PlayCount
       Entry: 3
-      Data: 0
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -174,7 +184,7 @@ MonoBehaviour:
       Data: 10|AkieEmpty.SkillRuntime.SkillAudioEvent, GameRuntime
     - Name: TrackName
       Entry: 1
-      Data: 5
+      Data: "\u97F3\u6548\u8F68\u9053"
     - Name: Clip
       Entry: 6
       Data: 
@@ -200,5 +210,5 @@ MonoBehaviour:
       Entry: 8
       Data: 
   skillName: 
-  maxFrameCount: 211
+  maxFrameCount: 343
   frameRote: 60

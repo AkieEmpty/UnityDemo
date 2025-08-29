@@ -161,7 +161,7 @@ namespace AkieEmpty.SkillEditor
                     // 修改数据，刷新视图
                     ((AnimationTrackItem)currentTrackItem).AnimationFrameData.durationFrame = value;
                     int frameIndex = (currentTrackItem as AnimationTrackItem).FrameIndex;
-                    skillEditorSystem.CheckMaxFrameCount(frameIndex, value);
+                    skillEditorSystem.CheckAndExtendMaxFrameCount(frameIndex, value);
                     skillEditorSystem.SaveConfig();
                     currentTrackItem.ResetView();
                 }

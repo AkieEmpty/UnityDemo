@@ -1,4 +1,5 @@
-﻿using AkieEmpty.SkillRuntime;
+﻿using System;
+using AkieEmpty.SkillRuntime;
 using UnityEditor;
 using UnityEngine.UIElements;
 
@@ -7,17 +8,20 @@ namespace AkieEmpty.SkillEditor
     public class AudioTrackItemStyle:TrackItemStyleBase
     {
         private const string trackItemAssetPath = "Assets/Editor/SkillEditor/Assets/Track/TrackItem/AudioTrackItem.uxml";
+        private ISkillEditorSystem skillEditorSystem;
+        private VisualElement mainDragArea;
         private Label titleLabel;
-        public void Init(float frameUnitWidth, float frameRote, SkillAudioEvent skillAudioEvent, MultilineTrackStyle.ChildTrack childTrack)
+        public bool IsInit {  get; private set; }
+        public void Init(ISkillEditorSystem skillEditorSystem, SkillAudioEvent skillAudioEvent, MultilineTrackStyle.ChildTrack childTrack)
         {
-            if (skillAudioEvent.Clip != null)
+            this.skillEditorSystem = skillEditorSystem;
+            if (!IsInit && skillAudioEvent.Clip != null)
             {
                 titleLabel = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(trackItemAssetPath).Instantiate().Query<Label>();
                 root = titleLabel;
+                mainDragArea = root.Q<VisualElement>("Main");
                 childTrack.InitContent(root);
-                SetTitle(skillAudioEvent.Clip.name);
-                SetWidth(frameUnitWidth * skillAudioEvent.Clip.length * frameRote);
-                SetPosition(frameUnitWidth * skillAudioEvent.FrameIndex);
+                IsInit = true;
             }
            
         }
@@ -25,6 +29,18 @@ namespace AkieEmpty.SkillEditor
         public virtual void SetTitle(string title)
         {
             titleLabel.text = title;
+        }
+
+        public void RegisterMouseCallback<T>(EventCallback<T> action) where T : EventBase<T>, new()
+        {
+            mainDragArea.RegisterCallback<T>(action);
+        }
+
+        public void ResetView(int frameUnitWdith, SkillAudioEvent skillAudioEvent)
+        {
+            SetTitle(skillAudioEvent.Clip.name);
+            SetWidth(frameUnitWdith * skillAudioEvent.Clip.length * skillEditorSystem.SkillConfig.frameRote);
+            SetPosition(frameUnitWdith * skillAudioEvent.FrameIndex);
         }
     }
 }

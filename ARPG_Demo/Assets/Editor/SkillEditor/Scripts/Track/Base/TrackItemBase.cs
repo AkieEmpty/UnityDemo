@@ -8,20 +8,22 @@ namespace AkieEmpty.SkillEditor
     /// </summary>
     public abstract class TrackItemBase
     {
-        protected int frameUnitWdith;
+        protected int frameUnitWidth;
         public abstract void Select();
         public abstract void OnSelect();
         public abstract void OnUnSelect();
-        public virtual void ResetView() => ResetView(frameUnitWdith);
-        public virtual void ResetView(int frameUnitWdith) => this.frameUnitWdith = frameUnitWdith;
+        public virtual void ResetView() => ResetView(frameUnitWidth);
+        public virtual void ResetView(int frameUnitWdith) => this.frameUnitWidth = frameUnitWdith;
         public virtual void OnConfigChanged() { }
     }
     public abstract class TrackItemBase<T> :TrackItemBase where T:TrackBase
     {
         private Action<TrackItemBase> showTrackInspecotrAction;
-        protected TrackItemStyleBase itemStyleBase { get; set; }
         protected Color normalColor;
         protected Color selectColor;
+        protected TrackItemStyleBase itemStyleBase { get; set; }
+        public int FrameIndex { get; set; }
+        
         public void SetShowTrackInspecotrAction(Action<TrackItemBase> action)
         {
             showTrackInspecotrAction = action;
