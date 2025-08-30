@@ -14,7 +14,7 @@ namespace AkieEmpty.SkillEditor
     public interface ISkillEditorWindow
     {
         public SkillConfig SkillConfig {  get; }
-
+        public List<TrackBase> TrackList {  get; }
         public void ResetTrackData();
         public void ShowTrackInspector(TrackBase track, TrackItemBase trackItem);
         public void UpdateConsoleField();
@@ -27,7 +27,7 @@ namespace AkieEmpty.SkillEditor
         private const string SkillEditorScenePath = "Assets/Editor/SkillEditor/Scene/SkillEditorScene.unity";
         private static SkillEditorWindow editorWindow;
         private SkillEditorConfig skillEditorConfig;
-        private SkillEditorSystem skillEditorSystem;
+        private SkillEditorController skillEditorController;
         private SkillConfig skillConfig;
         public SkillConfig SkillConfig { get => skillConfig; }
 
@@ -50,7 +50,7 @@ namespace AkieEmpty.SkillEditor
 
             skillEditorConfig = new SkillEditorConfig();
             SkillConfig.SetValidateAction(ResetSkillConfigObjectField);
-            skillEditorSystem = new SkillEditorSystem(this, skillEditorConfig);
+            skillEditorController = new SkillEditorController(this, skillEditorConfig);
 
 
             InitMenu();
@@ -89,11 +89,11 @@ namespace AkieEmpty.SkillEditor
         }
         private void LoadEditorSceneButtonClick() 
         {
-            skillEditorSystem.LoadEditorScene(SkillEditorScenePath);
+            skillEditorController.LoadEditorScene(SkillEditorScenePath);
         }
         private void LoadOldSceneButtonClick()
         {
-            skillEditorSystem.LoadOldScene();
+            skillEditorController.LoadOldScene();
         }
         private void BasicInfoButtonClick()
         {
@@ -109,12 +109,12 @@ namespace AkieEmpty.SkillEditor
             }
             else
             {
-                previewCharacterObjectField.value = skillEditorSystem.CreatePreviewCharacter((GameObject)evt.newValue);
+                previewCharacterObjectField.value = skillEditorController.CreatePreviewCharacter((GameObject)evt.newValue);
             }
         }
         private void PreviewCharacterObjectFieldValueChanged(ChangeEvent<UnityEngine.Object> evt)
         {
-            skillEditorSystem.SetPreviewFromSceneObject(evt);
+            skillEditorController.SetPreviewFromSceneObject(evt);
         }
         private void SkillConfigObjectFieldValueChanged(ChangeEvent<UnityEngine.Object> evt)
         {
@@ -166,7 +166,7 @@ namespace AkieEmpty.SkillEditor
             Handles.color = Color.white;
             Rect rect = timerShaft.contentRect;
 
-            TimeShaftLayout layout = skillEditorSystem.CalculateTimeShaftLayout(ContentOffsetPos);
+            TimeShaftLayout layout = skillEditorController.CalculateTimeShaftLayout(ContentOffsetPos);
             int index = layout.index;
             for (float i = layout.startOffset; i < rect.width; i += skillEditorConfig.CurrentFrameUnitWidth)
             {
@@ -187,7 +187,7 @@ namespace AkieEmpty.SkillEditor
         private void DrawSelectLine()
         {
             // 判断当前选中帧是否在视图范围内
-            if(skillEditorSystem.TryGetSelectFrameViewportX(ContentOffsetPos, out float framPosX))
+            if(skillEditorController.TryGetSelectFrameViewportX(ContentOffsetPos, out float framPosX))
             {
                 Handles.BeginGUI();
                 Handles.color = Color.white;
@@ -210,12 +210,12 @@ namespace AkieEmpty.SkillEditor
         private void TimerShaftMouseDown(MouseDownEvent evt)
         {
             timerShaftIsMouseEnter = true;
-            skillEditorSystem.SelectFrameIndexFromMouseDown(evt.localMousePosition.x + ContentOffsetPos);
+            skillEditorController.SelectFrameIndexFromMouseDown(evt.localMousePosition.x + ContentOffsetPos);
         }
         private void TimerShaftMouseMove(MouseMoveEvent evt)
         {
             if (!timerShaftIsMouseEnter) return;
-            skillEditorSystem.SelectFrameIndexFromMouseDown(evt.localMousePosition.x + ContentOffsetPos);
+            skillEditorController.SelectFrameIndexFromMouseDown(evt.localMousePosition.x + ContentOffsetPos);
         }
         private void TimerShaftMouseUp(MouseUpEvent evt) => timerShaftIsMouseEnter = false;
         private void TimerShaftMouseOut(MouseOutEvent evt) => timerShaftIsMouseEnter = false;
@@ -257,40 +257,41 @@ namespace AkieEmpty.SkillEditor
       
         private void OnPreviouFrameButtonClick()
         {
-            skillEditorSystem.PreviouFrame();
+            skillEditorController.PreviouFrame();
         }
 
         private void OnPlayButtonClick()
         {
-           skillEditorSystem.Play();
+           skillEditorController.Play();
         }
 
         private void OnNextFrameButtonClick()
         {
-            skillEditorSystem.NextFrame();
+            skillEditorController.NextFrame();
         }
 
         private void OnCurrentFrameFieldValueChanged(ChangeEvent<int> evt)
         {
-            skillEditorSystem.UpdateCurrentSelectFrame(evt.newValue);
+            skillEditorController.UpdateCurrentSelectFrame(evt.newValue);
         }
 
         private void OnMaxFrameCountValueChanged(ChangeEvent<int> evt)
         {
-            skillEditorSystem.UpdateCurrentMaxFrameCount(evt.newValue);
+            skillEditorController.UpdateCurrentMaxFrameCount(evt.newValue);
         }
         public void UpdateConsoleField()
         {
-            currentFrameField.value = skillEditorSystem.CurrentSelectFrameIndex;
-            maxFrameCountField.value = skillEditorSystem.CurrentMaxFrameCount;
+            currentFrameField.value = skillEditorController.CurrentSelectFrameIndex;
+            maxFrameCountField.value = skillEditorController.CurrentMaxFrameCount;
         }
 
         #endregion
 
         #region Track
         private VisualElement trackMenuList;
-        private VisualElement trackContentList;   
-        private readonly List<TrackBase> trackList = new List<TrackBase>();
+        private VisualElement trackContentList;
+
+        public List<TrackBase> TrackList { get; } = new List<TrackBase>();
 
         private void InitTrackView()
         {
@@ -311,22 +312,22 @@ namespace AkieEmpty.SkillEditor
         private void InitAnimationTrack()
         {
             AnimationTrack animationTrack = new AnimationTrack();
-            animationTrack.Init(skillEditorSystem, this, trackMenuList, trackContentList);
-            trackList.Add(animationTrack);
+            animationTrack.Init(skillEditorController, this, trackMenuList, trackContentList);
+            TrackList.Add(animationTrack);
         }
         private void InitAudioTrack()
         {
             AudioTrack audioTrack = new AudioTrack();
-            audioTrack.Init(skillEditorSystem,this,trackMenuList, trackContentList);
-            trackList.Add(audioTrack);
+            audioTrack.Init(skillEditorController,this,trackMenuList, trackContentList);
+            TrackList.Add(audioTrack);
         }
         private void DestoryTrack()
         {
-            for (int i = 0; i < trackList.Count; i++)
+            for (int i = 0; i < TrackList.Count; i++)
             {
-                trackList[i].Destory();
+                TrackList[i].Destory();
             }
-            trackList.Clear();
+            TrackList.Clear();
         }
         private void ResetTrack()
         { 
@@ -338,14 +339,14 @@ namespace AkieEmpty.SkillEditor
             else
             {
                 //如果轨道列表里面没有数据,说明没有轨道,当前用户是有配置的,需要初始化轨道
-                if (trackList.Count==0)
+                if (TrackList.Count==0)
                 {
                     InitTrack();
                 }
                 //更新视图
-                for (int i = 0; i < trackList.Count; i++)
+                for (int i = 0; i < TrackList.Count; i++)
                 {
-                    trackList[i].ResetView();
+                    TrackList[i].ResetView();
                 }
             }
           
@@ -363,14 +364,14 @@ namespace AkieEmpty.SkillEditor
         public void ResetTrackData()
         {
             // 重新引用一下数据
-            for (int i = 0; i < trackList.Count; i++)
+            for (int i = 0; i < TrackList.Count; i++)
             {
-                trackList[i].OnConfigChanged();
+                TrackList[i].OnConfigChanged();
             }
         }
         public void UpdateTrackContentSzie()
         {
-            trackContentList.style.width = skillEditorConfig.CurrentFrameUnitWidth * skillEditorSystem.CurrentMaxFrameCount;
+            trackContentList.style.width = skillEditorConfig.CurrentFrameUnitWidth * skillEditorController.CurrentMaxFrameCount;
 
         }
         #endregion
@@ -378,13 +379,14 @@ namespace AkieEmpty.SkillEditor
         #region Preview
         public void Update()
         {
-            skillEditorSystem.UpdateTimer();
+            skillEditorController.UpdateTimer();
         }
+       
         #endregion
 
         public void ShowTrackInspector(TrackBase track, TrackItemBase trackItem)
         {
-            SkillEditorInspector.SetTrackItem(skillEditorSystem,trackItem,track);
+            SkillEditorInspector.SetTrackItem(skillEditorController,trackItem,track);
             Selection.activeObject = this;
         }
     }

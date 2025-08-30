@@ -8,7 +8,7 @@ namespace AkieEmpty.SkillEditor
 {
     public class SkillEditorConfig
     {
-        public const int StandFrameUnitWidth = 5;  // 标准帧单位宽度
+        public const int StandFrameUnitWidth = 10;  // 标准帧单位宽度
         public const int maxFrameWidthLV = 10;     
         public float defaultFrameRote =10;        //默认帧率
 

@@ -1,11 +1,14 @@
 {
   "dependencies": {
     "com.unity.addressables": "1.22.3",
+    "com.unity.ads": "4.4.2",
+    "com.unity.analytics": "3.8.1",
     "com.unity.cinemachine": "2.10.4",
     "com.unity.collab-proxy": "2.7.1",
     "com.unity.feature.development": "1.0.1",
     "com.unity.inputsystem": "1.11.2",
     "com.unity.playablegraph-visualizer": "0.2.1-preview.3",
+    "com.unity.purchasing": "4.11.0",
     "com.unity.render-pipelines.universal": "14.0.12",
     "com.unity.textmeshpro": "3.0.7",
     "com.unity.timeline": "1.7.6",

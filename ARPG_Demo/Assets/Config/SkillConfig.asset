@@ -1,0 +1,306 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddc72c99078fe1a4893301ac6b2221cc, type: 3}
+  m_Name: SkillConfig
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 7400000, guid: 15b28029e9c98b44f959cdd184062462, type: 2}
+    - {fileID: 7400000, guid: 3c13a8a77fec2234fadee38b31e74625, type: 2}
+    - {fileID: 7400000, guid: acd688bdb960b284abd34b0dfe9e790c, type: 2}
+    - {fileID: 7400000, guid: 77f78b5e8035077419f01d95c2a336ea, type: 2}
+    - {fileID: 7400000, guid: 350f9c32cd8845b45acb4df4e765a447, type: 2}
+    - {fileID: 8300000, guid: cea7960e3479de1439f5c782ab4a2825, type: 3}
+    - {fileID: 8300000, guid: 4e30e277524788548b81ce74a256bf08, type: 3}
+    - {fileID: 8300000, guid: 2819630bfb4397841940cd27d43b77e9, type: 3}
+    - {fileID: 8300000, guid: 5a1cdb6b031075b40a935b6e93824543, type: 3}
+    - {fileID: 8300000, guid: 3a95a9e5ed49b39478e1d88e5f189e5e, type: 3}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: skillAnimationData
+      Entry: 7
+      Data: 0|AkieEmpty.SkillRuntime.SkillAnimationData, GameRuntime
+    - Name: frameDataDic
+      Entry: 7
+      Data: 1|System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[AkieEmpty.SkillRuntime.SkillAnimationEvent,
+        GameRuntime]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 2|System.Collections.Generic.GenericEqualityComparer`1[[System.Int32,
+        mscorlib]], mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 5
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 0
+    - Name: $v
+      Entry: 7
+      Data: 3|AkieEmpty.SkillRuntime.SkillAnimationEvent, GameRuntime
+    - Name: animationClip
+      Entry: 10
+      Data: 0
+    - Name: transitionTime
+      Entry: 4
+      Data: 0.25
+    - Name: durationFrame
+      Entry: 3
+      Data: 30
+    - Name: applyRootMotion
+      Entry: 5
+      Data: false
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 30
+    - Name: $v
+      Entry: 7
+      Data: 4|AkieEmpty.SkillRuntime.SkillAnimationEvent, GameRuntime
+    - Name: animationClip
+      Entry: 10
+      Data: 1
+    - Name: transitionTime
+      Entry: 4
+      Data: 0.25
+    - Name: durationFrame
+      Entry: 3
+      Data: 59
+    - Name: applyRootMotion
+      Entry: 5
+      Data: false
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 89
+    - Name: $v
+      Entry: 7
+      Data: 5|AkieEmpty.SkillRuntime.SkillAnimationEvent, GameRuntime
+    - Name: animationClip
+      Entry: 10
+      Data: 2
+    - Name: transitionTime
+      Entry: 4
+      Data: 0.25
+    - Name: durationFrame
+      Entry: 3
+      Data: 33
+    - Name: applyRootMotion
+      Entry: 5
+      Data: false
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 122
+    - Name: $v
+      Entry: 7
+      Data: 6|AkieEmpty.SkillRuntime.SkillAnimationEvent, GameRuntime
+    - Name: animationClip
+      Entry: 10
+      Data: 3
+    - Name: transitionTime
+      Entry: 4
+      Data: 0.25
+    - Name: durationFrame
+      Entry: 3
+      Data: 56
+    - Name: applyRootMotion
+      Entry: 5
+      Data: false
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 3
+      Data: 178
+    - Name: $v
+      Entry: 7
+      Data: 7|AkieEmpty.SkillRuntime.SkillAnimationEvent, GameRuntime
+    - Name: animationClip
+      Entry: 10
+      Data: 4
+    - Name: transitionTime
+      Entry: 4
+      Data: 0.25
+    - Name: durationFrame
+      Entry: 3
+      Data: 69
+    - Name: applyRootMotion
+      Entry: 5
+      Data: false
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: skillAudioData
+      Entry: 7
+      Data: 8|AkieEmpty.SkillRuntime.SkillAudioData, GameRuntime
+    - Name: frameDataDic
+      Entry: 7
+      Data: 9|Unity.Plastic.Antlr3.Runtime.Misc.ListStack`1[[AkieEmpty.SkillRuntime.SkillAudioEvent,
+        GameRuntime]], Unity.Plastic.Antlr3.Runtime
+    - Name: 
+      Entry: 12
+      Data: 5
+    - Name: 
+      Entry: 7
+      Data: 10|AkieEmpty.SkillRuntime.SkillAudioEvent, GameRuntime
+    - Name: TrackName
+      Entry: 1
+      Data: "\u97F3\u6548\u8F68\u9053"
+    - Name: audioClip
+      Entry: 10
+      Data: 5
+    - Name: voluem
+      Entry: 4
+      Data: 1
+    - Name: frameIndex
+      Entry: 3
+      Data: 13
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 11|AkieEmpty.SkillRuntime.SkillAudioEvent, GameRuntime
+    - Name: TrackName
+      Entry: 1
+      Data: "\u97F3\u6548\u8F68\u9053"
+    - Name: audioClip
+      Entry: 10
+      Data: 6
+    - Name: voluem
+      Entry: 4
+      Data: 1
+    - Name: frameIndex
+      Entry: 3
+      Data: 45
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 12|AkieEmpty.SkillRuntime.SkillAudioEvent, GameRuntime
+    - Name: TrackName
+      Entry: 1
+      Data: "\u97F3\u6548\u8F68\u9053"
+    - Name: audioClip
+      Entry: 10
+      Data: 7
+    - Name: voluem
+      Entry: 4
+      Data: 1
+    - Name: frameIndex
+      Entry: 3
+      Data: 104
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 13|AkieEmpty.SkillRuntime.SkillAudioEvent, GameRuntime
+    - Name: TrackName
+      Entry: 1
+      Data: "\u97F3\u6548\u8F68\u9053"
+    - Name: audioClip
+      Entry: 10
+      Data: 8
+    - Name: voluem
+      Entry: 4
+      Data: 1
+    - Name: frameIndex
+      Entry: 3
+      Data: 134
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 14|AkieEmpty.SkillRuntime.SkillAudioEvent, GameRuntime
+    - Name: TrackName
+      Entry: 1
+      Data: "\u97F3\u6548\u8F68\u9053"
+    - Name: audioClip
+      Entry: 10
+      Data: 9
+    - Name: voluem
+      Entry: 4
+      Data: 1
+    - Name: frameIndex
+      Entry: 3
+      Data: 189
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  skillName: 
+  maxFrameCount: 317
+  frameRote: 60

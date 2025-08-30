@@ -1,5 +1,6 @@
 ﻿using System;
 using AkieEmpty.SkillRuntime;
+using JKFrame;
 using UnityEngine;
 
 namespace AkieEmpty.Animations
@@ -46,6 +47,18 @@ namespace AkieEmpty.Animations
                 else animationController.ClearRootMotionAction();
 
                 animationController.PlaySingleAniamtion(animationData.animationClip,1,0.25F,false,true);
+            }
+
+            //驱动音效
+            for (int i = 0; i < skillConfig.skillAudioData.FrameDataDic.Count; i++)
+            {
+                SkillAudioEvent audioEvent = skillConfig.skillAudioData.FrameDataDic[i];
+                if (audioEvent.audioClip != null && audioEvent.frameIndex == currentFrameIndex)
+                {
+                    //播放音效,从头播放
+                    AudioSystem.PlayOneShot(audioEvent.audioClip,transform.position,false,audioEvent.voluem);
+                }
+
             }
         }
         private void Update()

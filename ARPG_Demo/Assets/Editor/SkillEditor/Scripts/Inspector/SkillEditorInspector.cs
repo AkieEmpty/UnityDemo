@@ -12,8 +12,8 @@ namespace AkieEmpty.SkillEditor
         public static SkillEditorInspector Instance;
         private static TrackItemBase currentTrackItem;
         private static TrackBase currentTrack;
-        private static ISkillEditorSystem skillEditorSystem;
-        public static void SetTrackItem(ISkillEditorSystem skillEditorSystem, TrackItemBase trackItem, TrackBase track)
+        private static ISkillEditorController skillEditorSystem;
+        public static void SetTrackItem(ISkillEditorController skillEditorSystem, TrackItemBase trackItem, TrackBase track)
         {
             if (SkillEditorInspector.skillEditorSystem == null) SkillEditorInspector.skillEditorSystem = skillEditorSystem;
             if (currentTrackItem != null)
@@ -50,14 +50,19 @@ namespace AkieEmpty.SkillEditor
         {
             Clean();
             if (currentTrackItem == null) return;
-
-            // TODO:目前只有动画这一种情况
-            if (currentTrackItem.GetType() == typeof(AnimationTrackItem))
+            Type type = currentTrackItem.GetType();
+            if (type == typeof(AnimationTrackItem))
             {
                 DrawAniamtionTrackItem((AnimationTrackItem)currentTrackItem);
             }
+            else if (type == typeof(AudioTrackItem))
+            {
+                DrawAudioTrackItem((AudioTrackItem)currentTrackItem);
+            }
 
         }
+
+      
 
         private void Clean()
         {
@@ -177,7 +182,7 @@ namespace AkieEmpty.SkillEditor
         }
         private void TransitionTimeFieldFocusOut(FocusOutEvent evt)
         {
-            if(oldDurationValue!= transitionTimeField.value)
+            if(oldTransitionTimeValue != transitionTimeField.value)
             {
                 ((AnimationTrackItem)currentTrackItem).AnimationFrameData.transitionTime = transitionTimeField.value;
             }
@@ -186,6 +191,48 @@ namespace AkieEmpty.SkillEditor
         {
             currentTrack.DeleteTrackItem(trackItemFrameIndex); // 此函数提供保存和刷新视图逻辑
             Selection.activeObject = null;
+        }
+        #endregion
+
+        #region 音效轨道
+        private FloatField volumeFloatField;
+        private float oldVolumeFloatFieldValue;
+        private void DrawAudioTrackItem(AudioTrackItem trackItem)
+        {
+            // 音效资源
+            ObjectField audioClipAssetField = new ObjectField("音效资源");
+            audioClipAssetField.objectType = typeof(AudioClip);
+            audioClipAssetField.value = trackItem.SkillAudioEvent.audioClip;
+            audioClipAssetField.RegisterValueChangedCallback(AudioClipAssetFiedlValueChanged);
+            root.Add(audioClipAssetField);
+
+            //音量
+            volumeFloatField = new FloatField("播放音量");
+            volumeFloatField.value = trackItem.SkillAudioEvent.voluem;
+            volumeFloatField.RegisterCallback<FocusInEvent>(VolumeTimeFieldFocusIn);
+            volumeFloatField.RegisterCallback<FocusOutEvent>(VolumeTimeFieldFocusOut);
+            root.Add(volumeFloatField);
+        }
+
+        private void AudioClipAssetFiedlValueChanged(ChangeEvent<UnityEngine.Object> evt)
+        {
+            AudioClip audioClip = evt.newValue as AudioClip;
+            //保存到配置中
+            ((AudioTrackItem)currentTrackItem).SkillAudioEvent.audioClip = audioClip;
+            currentTrackItem.ResetView();
+        }
+
+        private void VolumeTimeFieldFocusIn(FocusInEvent evt)
+        {
+            oldVolumeFloatFieldValue = volumeFloatField.value;
+        }
+
+        private void VolumeTimeFieldFocusOut(FocusOutEvent evt)
+        {
+            if (volumeFloatField.value != oldVolumeFloatFieldValue)
+            {
+                ((AudioTrackItem)currentTrackItem).SkillAudioEvent.voluem = volumeFloatField.value;
+            }
         }
         #endregion
     }

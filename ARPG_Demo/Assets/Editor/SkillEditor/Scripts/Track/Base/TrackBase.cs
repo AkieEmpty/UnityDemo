@@ -11,10 +11,10 @@ namespace AkieEmpty.SkillEditor
     /// </summary>
     public abstract class TrackBase 
     {
-        protected ISkillEditorSystem skillEditorSystem;
+        protected ISkillEditorController skillEditorSystem;
         protected ISkillEditorWindow skillEditorWindow;
         public int FrameUnitWidth => skillEditorSystem.SkillEditorConfig.CurrentFrameUnitWidth;
-        public virtual void Init(ISkillEditorSystem skillEditorSystem, ISkillEditorWindow skillEditorWindow, VisualElement menuParent, VisualElement trackParent)
+        public virtual void Init(ISkillEditorController skillEditorSystem, ISkillEditorWindow skillEditorWindow, VisualElement menuParent, VisualElement trackParent)
         {
             this.skillEditorSystem = skillEditorSystem;
             this.skillEditorWindow = skillEditorWindow;
@@ -30,5 +30,8 @@ namespace AkieEmpty.SkillEditor
         public virtual void DeleteTrackItem(int frameIndex) { }
 
         public virtual void OnConfigChanged() { }
+        public virtual void TickView(int frameIndex) { }
+        public virtual void OnPlay(int startFrameIndex) { }
+        public virtual void OnStop() { }
     }
 }
